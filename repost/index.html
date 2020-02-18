@@ -16,6 +16,10 @@
         <a href="#news">News</a>
         <a href="#contact">Contact</a>
         <a href="#about">About</a>
+        <div class="login" id="login">
+            <a v-if="typeof(user) ==='undefined' || user === null || user === ''" href="login">Login</a>
+            <span v-else>Logged in as {{ user }}</span>
+        </div>
     </div>
 
     <div id="app">

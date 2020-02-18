@@ -1,5 +1,11 @@
 @import "reset.css";
 
+/* Background Color */
+body {
+  background-color: #414145;
+  font-family: Calibri, sans-serif;
+}
+
 /* Logo */
 .logo {
   background-color: #1c2270;
@@ -7,15 +13,16 @@
   width: 100px;
   border-radius: 50% 0 50% 50%;
   position: fixed;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0px 5px 0px 0px rgba(0,0,0,0.2);
   text-align: center;
   line-height: 85px;
 }
 
 .logo span {
-  color: white;
+  color: #d1d1d1;
   vertical-align: middle;
   line-height: normal;
+  font-style: italic;
 }
 
 /* Top navigation bar */
@@ -27,27 +34,23 @@
   right: 0;
   background-color: #1c2270;
   overflow: hidden;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0px 5px 0px 0px rgba(0,0,0,0.2);
 }
 
 /* Style the links inside the navigation bar */
 .topnav a {
   float: left;
-  color: #ffffff;
+  color: #d1d1d1;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
   font-size: 17px;
 }
 
-/* Change the color of links on hover */
 .topnav a:hover {
-  background-color: #ddd;
-  color: black;
+  color: #ffffff;
 }
 
-/* Add a color to the active/current link */
-.topnav a.active {
-  background-color: #4CAF50;
-  color: white;
+.login {
+  float: right;
 }
