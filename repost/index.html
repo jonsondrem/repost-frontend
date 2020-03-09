@@ -8,7 +8,7 @@
 <body>
 
     <div class="logo" id="logo">
-        <span>Repost</span>
+        <img src="Logo.png" alt="logo">
     </div>
 
     <div class="topnav" id="topnav">
@@ -22,8 +22,52 @@
         </div>
     </div>
 
-    <div id="app">
-        <span>{{ product }}</span>
+    <!--<div id="post-list" class="post-list">
+        <div class="post">
+            <div class="post-circle">
+                <a href="user">
+                    <img src="pp.png">
+                </a>
+            </div>
+            <div class="post-info">
+                <a href="blabla" class="post-info-resub">test resub</a>
+                <span class="post-info-space">-</span>
+                <a href="blabla" class="post-info-user">test user</a>
+                <br>
+                <a href="blabla" class="post-info-title">test title</a>
+            </div>
+        </div>
+        <div class="post">
+            <div class="post-circle">
+                <a href="user">
+                    <img src="pp.png">
+                </a>
+            </div>
+            <div class="post-info">
+                <a href="blabla" class="post-info-resub">test resub2</a>
+                <span class="post-info-space">-</span>
+                <a href="blabla" class="post-info-user">test user2</a>
+                <br>
+                <a href="blabla" class="post-info-title">test title2</a>
+            </div>
+        </div>
+    </div>-->
+
+    <div id="post-list" class="post-list">
+        <div class="post" v-for="post in posts">
+            <div class="post-circle">
+                <a href="user">
+                    <img src="pp.png">
+                </a>
+            </div>
+            <div class="post-info">
+                <a href="blabla" class="post-info-resub">{{ post.parent_resub_name }}</a>
+                <span class="post-info-space">-</span>
+                <a href="blabla" class="post-info-user">{{  post.author_username  }}</a>
+                <br>
+                <a href="blabla" class="post-info-title">{{ post.title }}</a>
+            </div>
+        </div>
     </div>
 
     <script src="vue.js"></script>

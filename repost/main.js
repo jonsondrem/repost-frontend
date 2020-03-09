@@ -1,7 +1,16 @@
-var app = new Vue({
-    el: '#app',
+var posts = new Vue({
+    el: '#post-list',
     data: {
-        product: 'Test'
+        posts: []
+    },
+    created () {
+        fetch('http://127.0.0.1:8000/api/resubs/car/posts')
+            .then(response => response.json())
+            .then(json => {
+                for (i in json) {
+                    this.posts.push(json[i]);
+                }
+            })
     }
 })
 

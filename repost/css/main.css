@@ -2,27 +2,28 @@
 
 /* Background Color */
 body {
-  background-color: #414145;
-  font-family: Calibri, sans-serif;
+  background-color: #1a1a1a;
+  font-family: Consolas, monaco, monospace;
 }
 
 /* Logo */
 .logo {
-  background-color: #1c2270;
-  height: 100px;
-  width: 100px;
-  border-radius: 50% 0 50% 50%;
   position: fixed;
+  background-color: #242424;
+  height: 130px;
+  width: 130px;
+  border-radius: 50%;
   box-shadow: 0px 5px 0px 0px rgba(0,0,0,0.2);
   text-align: center;
   line-height: 85px;
+  z-index: 3;
 }
 
-.logo span {
-  color: #d1d1d1;
-  vertical-align: middle;
-  line-height: normal;
-  font-style: italic;
+.logo img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 /* Top navigation bar */
@@ -30,21 +31,26 @@ body {
 .topnav {
   position: fixed;
   top: 0;
-  left: 100px;
+  left: 65px;
   right: 0;
-  background-color: #1c2270;
+  background-color: #2e2e2e;
   overflow: hidden;
   box-shadow: 0px 5px 0px 0px rgba(0,0,0,0.2);
+  height: 65px;
+  z-index: 2;
+  padding-left: 65px;
 }
 
 /* Style the links inside the navigation bar */
 .topnav a {
   float: left;
-  color: #d1d1d1;
+  color: #45b1ff;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
   font-size: 17px;
+  font-weight: bold;
+  transition: 0.2s;
 }
 
 .topnav a:hover {
@@ -53,4 +59,79 @@ body {
 
 .login {
   float: right;
+}
+
+.post-list {
+  position: absolute;
+  color: white;
+  top: 200px;
+  left: 10%;
+  width: 35%;
+}
+
+.post {
+  height: 80px;
+  margin-bottom: 5px;
+}
+
+/*.post:hover {
+  filter: brightness(110%);
+}*/
+
+.post-circle {
+  position: relative;
+  height: 80px;
+  width: 80px;
+  background-color: #242424;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.post-circle img {
+  position: relative;
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.post-info {
+  position: relative;
+  top: -65px;
+  left: 10%;
+  width: 87%;
+  height: 50px;
+  background-color: #2e2e2e;
+  padding-left: 3%;
+  font-size: 12px;
+}
+
+.post-info a {
+  text-decoration: none;
+}
+
+.post-info-resub {
+  color: #45b1ff;
+}
+
+.post-info-resub:hover {
+  text-decoration: underline;
+}
+
+.post-info-user {
+  color: white;
+}
+
+.post-info-user:hover {
+  text-decoration: underline;
+}
+
+.post-info-title {
+  position: absolute;
+  font-weight: bold;
+  bottom: 15%;
+  font-size: 22px;
+  color: white;
 }
