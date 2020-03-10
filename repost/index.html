@@ -21,37 +21,6 @@
         </div>
     </div>
 
-    <!--<div id="post-list" class="post-list">
-        <div class="post">
-            <div class="post-circle">
-                <a href="user">
-                    <img src="pp.png">
-                </a>
-            </div>
-            <div class="post-info">
-                <a href="blabla" class="post-info-resub">test resub</a>
-                <span class="post-info-space">-</span>
-                <a href="blabla" class="post-info-user">test user</a>
-                <br>
-                <a href="blabla" class="post-info-title">test title</a>
-            </div>
-        </div>
-        <div class="post">
-            <div class="post-circle">
-                <a href="user">
-                    <img src="pp.png">
-                </a>
-            </div>
-            <div class="post-info">
-                <a href="blabla" class="post-info-resub">test resub2</a>
-                <span class="post-info-space">-</span>
-                <a href="blabla" class="post-info-user">test user2</a>
-                <br>
-                <a href="blabla" class="post-info-title">test title2</a>
-            </div>
-        </div>
-    </div>-->
-
     <div id="post-list" class="post-list">
         <div class="post" v-for="post in posts">
             <div class="post-circle">
@@ -67,7 +36,7 @@
                     <br>
                     <a href="blabla" class="post-info-title">{{ post.title }}</a>
                 </div>
-                <div class="post-info-right" v-bind:style=" post.votes < 0 ? 'color: #ff0000;' : 'color: #00ff73;'">
+                <div class="post-info-right" v-bind:style="getVoteColor(post.votes)">
                     <span class="post-info-votes">{{ post.votes }}</span>
                 </div>
             </div>

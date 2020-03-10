@@ -19,6 +19,16 @@ var posts = new Vue({
                         });
                 }
             });
+    },
+    methods: {
+        getVoteColor: function(vote) {
+            if (vote == 0) {
+                return 'color: #ffffff';
+            } else if (vote < 0) {
+                return 'color: #ff0000';
+            }
+            return 'color: #00ff73';
+        }
     }
 });
 
