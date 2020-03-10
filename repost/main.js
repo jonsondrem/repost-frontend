@@ -1,18 +1,26 @@
 var posts = new Vue({
     el: '#post-list',
     data: {
-        posts: []
+        posts: [],
+        resubs: []
     },
     created () {
-        fetch('http://127.0.0.1:8000/api/resubs/car/posts')
+        fetch('http://127.0.0.1:8000/api/resubs/')
             .then(response => response.json())
             .then(json => {
                 for (i in json) {
-                    this.posts.push(json[i]);
+                    this.resubs.push(json[i]);
+                    fetch('http://127.0.0.1:8000/api/resubs/' + this.resubs[i].name + '/posts')
+                        .then(response => response.json())
+                        .then(json2 => {
+                            for (x in json2) {
+                                this.posts.push(json2[x]);
+                            }
+                        });
                 }
-            })
+            });
     }
-})
+});
 
 var current_user = new Vue({
     el: '#login',
@@ -26,4 +34,4 @@ var current_user = new Vue({
                 this.user = json.username;
             })
     }
-})
+});

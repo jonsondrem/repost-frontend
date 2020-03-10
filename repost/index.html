@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Repost</title>
@@ -61,11 +60,16 @@
                 </a>
             </div>
             <div class="post-info">
-                <a href="blabla" class="post-info-resub">{{ post.parent_resub_name }}</a>
-                <span class="post-info-space">-</span>
-                <a href="blabla" class="post-info-user">{{  post.author_username  }}</a>
-                <br>
-                <a href="blabla" class="post-info-title">{{ post.title }}</a>
+                <div class="post-info-left">
+                    <a href="blabla" class="post-info-resub">{{ post.parent_resub_name }}</a>
+                    <span class="post-info-space">-</span>
+                    <a href="blabla" class="post-info-user">{{  post.author_username  }}</a>
+                    <br>
+                    <a href="blabla" class="post-info-title">{{ post.title }}</a>
+                </div>
+                <div class="post-info-right" v-bind:style=" post.votes < 0 ? 'color: #ff0000;' : 'color: #00ff73;'">
+                    <span class="post-info-votes">{{ post.votes }}</span>
+                </div>
             </div>
         </div>
     </div>

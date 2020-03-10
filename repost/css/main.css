@@ -72,11 +72,12 @@ body {
 .post {
   height: 80px;
   margin-bottom: 5px;
+  transition: 0.2s;
 }
 
-/*.post:hover {
+.post:hover {
   filter: brightness(110%);
-}*/
+}
 
 .post-circle {
   position: relative;
@@ -88,7 +89,7 @@ body {
 }
 
 .post-circle img {
-  position: relative;
+  position: absolute;
   width: 80%;
   height: 80%;
   border-radius: 50%;
@@ -110,6 +111,19 @@ body {
 
 .post-info a {
   text-decoration: none;
+}
+
+.post-info-left {
+  float: left;
+  width: 90%;
+  height: 100%;
+}
+
+.post-info-right {
+  position: relative;
+  float: right;
+  width: 10%;
+  height: 100%;
 }
 
 .post-info-resub {
@@ -134,4 +148,12 @@ body {
   bottom: 15%;
   font-size: 22px;
   color: white;
+}
+
+.post-info-votes {
+  position: absolute;
+  font-size: 22px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
