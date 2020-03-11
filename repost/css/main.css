@@ -165,7 +165,7 @@ body {
   width: 35%;
 }
 
-.top-rated-post-title {
+.top-rated-post-top {
   position: relative;
   background-color: #2e2e2e;
   width: 100%;
@@ -174,4 +174,24 @@ body {
   font-size: 22px;
   top: 15px;
   height: 50px;
+}
+
+.top-rated-post-subtop {
+  font-size: 12px;
+}
+
+.top-rated-post-subtop a {
+  text-decoration: none;
+}
+
+.top-rated-post-subtop a:hover {
+  text-decoration: underline;
+}
+
+.top-author {
+  color: #00ff73;
+}
+
+.top-post-votes {
+  color: #45b1ff;
 }

@@ -1,8 +1,19 @@
 var posts = new Vue({
-    el: '#post-list',
+    el: '#post-data',
     data: {
         posts: [],
-        resubs: []
+        resubs: [],
+        topPost: {
+            "id": -1,
+            "parent_resub_name": "none",
+            "title": "none",
+            "url": "none",
+            "content": "none",
+            "author_username": "none",
+            "created": "0",
+            "edited": "0",
+            "votes": 0
+        }
     },
     created () {
         fetch('http://127.0.0.1:8000/api/resubs/')
@@ -15,6 +26,9 @@ var posts = new Vue({
                         .then(json2 => {
                             for (x in json2) {
                                 this.posts.push(json2[x]);
+                                if (this.posts[x].votes > this.topPost.votes) {
+                                    this.topPost = this.posts[x];
+                                }
                             }
                         });
                 }
@@ -35,7 +49,7 @@ var posts = new Vue({
 var current_user = new Vue({
     el: '#login',
     data: {
-        user: ''
+        user: null
     },
     mounted () {
         fetch('http://127.0.0.1:8000/api/users/me')

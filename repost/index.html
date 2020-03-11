@@ -16,39 +16,46 @@
         <a href="#contact">Contact</a>
         <a href="#about">About</a>
         <div class="login" id="login">
-            <a v-if="typeof(user) ==='undefined' || user === null || user === ''" href="login">Login</a>
+            <a v-if="typeof(user) === 'undefined' || user === null" href="login">Login</a>
             <span v-else>Logged in as {{ user }}</span>
         </div>
     </div>
 
-    <div id="post-list" class="post-list">
-        <div class="post" v-for="post in posts">
-            <div class="post-circle">
-                <a href="user">
-                    <img src="pp.png">
-                </a>
-            </div>
-            <div class="post-info">
-                <div class="post-info-left">
-                    <a href="blabla" class="post-info-resub">{{ post.parent_resub_name }}</a>
-                    <span class="post-info-space">-</span>
-                    <a href="blabla" class="post-info-user">{{  post.author_username  }}</a>
-                    <br>
-                    <a href="blabla" class="post-info-title">{{ post.title }}</a>
+    <div id="post-data" class="post-data">
+        <div class="post-list">
+            <div class="post" v-for="post in posts">
+                <div class="post-circle">
+                    <a href="user">
+                        <img src="pp.png">
+                    </a>
                 </div>
-                <div class="post-info-right" v-bind:style="getVoteColor(post.votes)">
-                    <span class="post-info-votes">{{ post.votes }}</span>
+                <div class="post-info">
+                    <div class="post-info-left">
+                        <a href="blabla" class="post-info-resub">{{ post.parent_resub_name }}</a>
+                        <span class="post-info-space">-</span>
+                        <a href="blabla" class="post-info-user">{{  post.author_username  }}</a>
+                        <br>
+                        <a href="blabla" class="post-info-title">{{ post.title }}</a>
+                    </div>
+                    <div class="post-info-right" v-bind:style="getVoteColor(post.votes)">
+                        <span class="post-info-votes">{{ post.votes }}</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="top-rated-post" id="top-rated-post">
-        <div class="top-rated-post-title" id="top-rated-post-title">
-            Top Rated Post
-            <br>
-            <span class="post-info-space">from</span>
-            <a href="blabla" class="post-info-resub">{{ post.parent_resub_name }}</a>
+        <div class="top-rated-post" id="top-rated-post">
+            <div class="top-rated-post-top" id="top-rated-post-top">
+                Top Rated Post
+                <br>
+                <div class="top-rated-post-subtop">
+                    <span class="post-info-space">From</span>
+                    <a href="blabla" class="post-info-resub">{{ topPost.parent_resub_name }}</a> -
+                    <span class="post-info-space">By</span>
+                    <a href="blabla" class="top-author">{{ topPost.author_username }}</a> -
+                    <span>Votes </span><span class="top-post-votes">{{ topPost.votes }}</span>
+                </div>
+            </div>
         </div>
     </div>
 
