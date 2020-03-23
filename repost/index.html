@@ -30,12 +30,13 @@
                     </a>
                 </div>
                 <div class="post-info">
+                    <a href="empty" class="post-link"></a>
                     <div class="post-info-left">
                         <a href="blabla" class="post-info-resub">{{ post.parent_resub_name }}</a>
                         <span class="post-info-space">-</span>
                         <a href="blabla" class="post-info-user">{{  post.author_username  }}</a>
                         <br>
-                        <a href="blabla" class="post-info-title">{{ post.title }}</a>
+                        <span class="post-info-title">{{ post.title }}</span>
                     </div>
                     <div class="post-info-right" v-bind:style="getVoteColor(post.votes)">
                         <span class="post-info-votes">{{ post.votes }}</span>
@@ -44,17 +45,20 @@
             </div>
         </div>
 
-        <div class="top-rated-post" id="top-rated-post">
-            <div class="top-rated-post-top" id="top-rated-post-top">
-                Top Rated Post
+        <div class="top-rated-post">
+            <a href="empty" class="post-link"></a>
+            <div class="top-rated-post-top">
+                <span class="top-post-title">Top Rated Post</span>
                 <br>
-                <div class="top-rated-post-subtop">
-                    <span class="post-info-space">From</span>
-                    <a href="blabla" class="post-info-resub">{{ topPost.parent_resub_name }}</a> -
-                    <span class="post-info-space">By</span>
-                    <a href="blabla" class="top-author">{{ topPost.author_username }}</a> -
-                    <span>Votes </span><span class="top-post-votes">{{ topPost.votes }}</span>
-                </div>
+                <span class="post-info-space">From</span>
+                <a href="blabla" class="post-info-resub">{{ topPost.parent_resub_name }}</a> -
+                <span class="post-info-space">By</span>
+                <a href="blabla" class="top-author">{{ topPost.author_username }}</a> -
+                <span>Votes </span><span class="top-post-votes">{{ topPost.votes }}</span>
+            </div>
+            <div class="top-rated-post-bottom">
+                <span class="top-rated-post-title">{{ topPost.title }}</span>
+                <p class="top-rated-post-content">{{ topPost.content }}</p>
             </div>
         </div>
     </div>

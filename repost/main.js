@@ -51,7 +51,7 @@ var current_user = new Vue({
     data: {
         user: null
     },
-    mounted () {
+    created () {
         fetch('http://127.0.0.1:8000/api/users/me')
             .then(response => response.json())
             .then(json => {

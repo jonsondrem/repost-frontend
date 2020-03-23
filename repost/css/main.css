@@ -127,7 +127,9 @@ body {
 }
 
 .post-info-resub {
+  position: relative;
   color: #45b1ff;
+  z-index: 2;
 }
 
 .post-info-resub:hover {
@@ -135,7 +137,9 @@ body {
 }
 
 .post-info-user {
+  position: relative;
   color: white;
+  z-index: 2;
 }
 
 .post-info-user:hover {
@@ -163,6 +167,11 @@ body {
   top: 200px;
   right: 10%;
   width: 35%;
+  transition: 0.2s;
+}
+
+.top-rated-post:hover {
+  filter: brightness(110%);
 }
 
 .top-rated-post-top {
@@ -171,27 +180,64 @@ body {
   width: 100%;
   color: #ffffff;
   text-align: center;
-  font-size: 22px;
+  font-size: 12px;
   top: 15px;
   height: 50px;
 }
 
-.top-rated-post-subtop {
-  font-size: 12px;
+.top-post-title {
+  font-size: 22px;
 }
 
-.top-rated-post-subtop a {
+.top-rated-post-top a {
   text-decoration: none;
 }
 
-.top-rated-post-subtop a:hover {
+.top-rated-post-top a:hover {
   text-decoration: underline;
 }
 
 .top-author {
+  position: relative;
   color: #00ff73;
+  z-index: 2;
 }
 
 .top-post-votes {
   color: #45b1ff;
+}
+
+.top-rated-post-bottom {
+  position: relative;
+  background-color: #242424;
+  top: 15px;
+  width: 100%;
+  min-height: 200px;
+  color: white;
+  padding-top: 2%;
+}
+
+.post-link {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  outline: none;
+}
+
+.top-rated-post-title {
+  position: relative;
+  font-size: 22px;
+  font-weight: bold;
+  top: 10%;
+  left: 3%;
+}
+
+.top-rated-post-content {
+  position: relative;
+  font-size: 16px;
+  padding-top: 16px;
+  left: 3%;
 }
