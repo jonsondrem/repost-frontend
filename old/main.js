@@ -19,12 +19,12 @@ var posts = new Vue({
         fetch('http://127.0.0.1:8000/api/resubs/')
             .then(response => response.json())
             .then(json => {
-                for (i in json) {
+                for (var i in json) {
                     this.resubs.push(json[i]);
                     fetch('http://127.0.0.1:8000/api/resubs/' + this.resubs[i].name + '/posts')
                         .then(response => response.json())
                         .then(json2 => {
-                            for (x in json2) {
+                            for (var x in json2) {
                                 this.posts.push(json2[x]);
                                 if (this.posts[x].votes > this.topPost.votes) {
                                     this.topPost = this.posts[x];
