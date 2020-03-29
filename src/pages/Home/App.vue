@@ -6,6 +6,8 @@
 </template>
 
 <script>
+    require('@/assets/css/reset.css');
+
     export default {
         name: "App",
         components: {
