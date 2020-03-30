@@ -16,7 +16,7 @@
                 <div class="section-header">Owned Resubs:</div>
                 <div class="content" v-if="resubs.length > 0">
                     <div v-for="(resub, index) in resubs" v-bind:key="index">
-                        <a class="resub" v-bind:href="'/resubs/' + resub.name + '/posts'">{{ resub.name }}</a>
+                        <a class="link" v-bind:href="'/resubs/' + resub.name + '/posts'">{{ resub.name }}</a>
                     </div>
                 </div>
                 <div class="content" v-else>This user currently doesn't own a resub.</div>
@@ -24,8 +24,8 @@
                 <div class="section-header">Posts:</div>
                 <div class="content" v-if="posts.length > 0">
                     <div v-for="(post, index) in posts" v-bind:key="index">
-                        "<a class="post" v-bind:href="'/resubs/' + post.parent_resub_name + '/posts/' + post.id">{{
-                            post.title }}</a>" in resub <a class="resub"
+                        "<a class="link" v-bind:href="'/resubs/' + post.parent_resub_name + '/posts/' + post.id">{{
+                            post.title }}</a>" in resub <a class="link"
                                                            v-bind:href="'/resubs/' + post.parent_resub_name + '/posts'">{{
                         post.parent_resub_name }}</a>
                     </div>
@@ -159,21 +159,12 @@
         padding-bottom: 32px;
     }
 
-    .resub {
+    .link {
         color: #45b1ff;
         text-decoration: none;
     }
 
-    .resub:hover {
-        text-decoration: underline;
-    }
-
-    .post {
-        color: white;
-        text-decoration: none;
-    }
-
-    .post:hover {
+    .link:hover {
         text-decoration: underline;
     }
 
