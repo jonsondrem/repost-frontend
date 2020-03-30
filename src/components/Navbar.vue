@@ -1,14 +1,14 @@
 <template>
     <div class="navbar">
         <div class="logo" id="logo">
-            <a href="index.html">
+            <a href="/">
                 <img src="../assets/Logo.png" alt="logo">
             </a>
         </div>
 
         <div class="topnav" id="topnav">
-            <a href="resubs">Resubs</a>
-            <a href="support">Support</a>
+            <a href="/resubs">Resubs</a>
+            <a href="/support">Support</a>
             <div class="login" id="login">
                 <a v-if="typeof(user) === 'undefined' || user === null" href="login">Login</a>
                 <a href="users/me" v-else>{{ user }}</a>

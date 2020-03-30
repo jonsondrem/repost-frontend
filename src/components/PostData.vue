@@ -50,15 +50,15 @@
                 posts: [],
                 resubs: [],
                 topPost: {
-                    "id": -1,
-                    "parent_resub_name": "none",
-                    "title": "none",
-                    "url": "none",
-                    "content": "none",
-                    "author_username": "none",
-                    "created": "0",
-                    "edited": "0",
-                    "votes": 0
+                    "id": null,
+                    "parent_resub_name": null,
+                    "title": null,
+                    "url": null,
+                    "content": null,
+                    "author_username": null,
+                    "created": null,
+                    "edited": null,
+                    "votes": null
                 }
             }
         },
@@ -172,7 +172,7 @@
 
     .post-info-user {
         position: relative;
-        color: white;
+        color: #00ff73;
         z-index: 2;
     }
 
