@@ -1,10 +1,18 @@
 <template>
-    <span>her er det resubs</span>
+    <div id="app">
+        <Navbar></Navbar>
+        <router-view></router-view>
+    </div>
 </template>
 
 <script>
+    require('@/assets/css/reset.css');
+
     export default {
-        name: "App"
+        name: "App",
+        components: {
+            Navbar: () => import('@/components/Navbar.vue')
+        }
     }
 </script>
 

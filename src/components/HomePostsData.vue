@@ -83,7 +83,7 @@
         },
         methods: {
             getVoteColor: function (vote) {
-                if (vote == 0) {
+                if (vote === 0) {
                     return 'color: #ffffff';
                 } else if (vote < 0) {
                     return 'color: #ff0000';
