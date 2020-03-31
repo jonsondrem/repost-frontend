@@ -1,7 +1,7 @@
 <template>
     <div id="app">
         <Navbar></Navbar>
-        <PostData></PostData>
+        <HomePostsData></HomePostsData>
     </div>
 </template>
 
@@ -12,7 +12,7 @@
         name: "App",
         components: {
             Navbar: () => import('@/components/Navbar.vue'),
-            PostData: () => import('@/components/PostData.vue')
+            HomePostsData: () => import('@/components/HomePostsData.vue')
         }
     };
 </script>

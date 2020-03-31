@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import VueRouter from 'vue-router'
 import DisplayUser from '@/components/DisplayUser';
-import PostData from "@/components/PostData";
+import HomePostsData from "@/components/HomePostsData";
 
 Vue.config.productionTip = false
 
@@ -10,7 +10,7 @@ Vue.use(VueRouter);
 
 const routes = [
   { path: '/users/:username', component: DisplayUser, props: true },
-  { path: '/users', component: PostData }
+  { path: '/users', component: HomePostsData }
 ];
 
 const router = new VueRouter({
