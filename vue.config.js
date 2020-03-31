@@ -18,12 +18,12 @@ module.exports = {
             title: 'Resubs',
             chunks: [ 'chunk-vendors', 'chunk-common', 'resubs' ]
         },
-        'posts': {
+        /*'posts': {
             entry: './src/pages/Posts/main.js',
             template: 'public/index.html',
             title: 'Posts',
             chunks: [ 'chunk-vendors', 'chunk-common', 'posts' ]
-        },
+        },*/
         'support': {
             entry: './src/pages/Support/main.js',
             template: 'public/index.html',
