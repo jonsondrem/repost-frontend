@@ -10,8 +10,8 @@
             <a href="/resubs">Resubs</a>
             <a href="/support">Support</a>
             <div class="login" id="login">
-                <a v-if="typeof(user) === 'undefined' || user === null" href="login">Login</a>
-                <a href="users/me" v-else>{{ user }}</a>
+                <a v-if="typeof(user) === 'undefined' || user === null" href="/login">Login</a>
+                <a v-bind:href="'/users/' + user" v-else>{{ user }}</a>
             </div>
         </div>
     </div>

@@ -3,6 +3,7 @@ import App from './App.vue'
 import VueRouter from 'vue-router'
 import ResubPostsData from "@/components/ResubPostsData";
 import ResubsList from "@/components/ResubsList";
+import DisplayPost from "@/components/DisplayPost";
 
 Vue.config.productionTip = false
 
@@ -11,7 +12,8 @@ Vue.use(VueRouter);
 const routes = [
   { path: '/resubs/:resubname/posts', component: ResubPostsData, props: true },
   { path: '/resubs', component: ResubsList },
-  { path: '/resubs/:resubname', redirect: '/resubs/:resubname/posts', component: ResubPostsData, props: true}
+  { path: '/resubs/:resubname', redirect: '/resubs/:resubname/posts', component: ResubPostsData, props: true},
+  { path: '/resubs/:resubname/posts/:post_id', component: DisplayPost, props: true }
 ];
 
 const router = new VueRouter({
