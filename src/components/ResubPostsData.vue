@@ -264,6 +264,7 @@
         font-weight: bold;
         top: 10%;
         left: 3%;
+        padding-right: 3%;
     }
 
     .resub-about {
@@ -271,6 +272,7 @@
         font-size: 16px;
         padding-top: 16px;
         left: 3%;
+        padding-right: 3%;
     }
 
     .no-resub {
