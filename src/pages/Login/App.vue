@@ -1,10 +1,17 @@
 <template>
-    <span>test</span>
+    <div id="app">
+        <Login></Login>
+    </div>
 </template>
 
 <script>
+    require('@/assets/css/reset.css');
+
     export default {
-        name: "App"
+        name: "App",
+        components: {
+            Login: () => import('@/components/Login.vue')
+        }
     }
 </script>
 
