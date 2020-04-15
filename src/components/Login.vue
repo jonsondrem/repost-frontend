@@ -4,14 +4,15 @@
             <label for="username">Username</label>
             <input type="text" id="username" name="username" v-model="username">
             <label for="password">Password</label>
-            <input type="text" id="password" name="password" v-model="password">
+            <input type="password" id="password" name="password" v-model="password">
             <input type="submit" value="Login" @click="handleSubmit">
         </form>
     </div>
 </template>
 
 <script>
-    import Vue from 'vue';
+    import axios from 'axios';
+    import qs from 'qs';
 
     export default {
         name: "Login.vue",
@@ -23,24 +24,26 @@
         },
         methods: {
             handleSubmit(e) {
-                e.preventDefault()
+                e.preventDefault();
+                let data = qs.stringify({
+                    username: this.username,
+                    password: this.password
+                });
                 if (this.password.length > 0) {
-                    Vue.http.post('http://127.0.0.1:8000/api/auth/token', {
-                        email: this.email,
-                        password: this.password
+                    axios.post('http://127.0.0.1:8000/api/auth/token', data, {
+                        headers: {
+                            'content-type': 'application/x-www-form-urlencoded'
+                        },
+                        withCredentials: true
                     })
-                        .then(response => {
-                            localStorage.setItem('user', JSON.stringify(response.data.user))
-                            localStorage.setItem('jwt', response.data.token)
-
-                            if (localStorage.getItem('jwt') != null) {
-                                this.$emit('loggedIn')
-                                this.$router.push('')
-                            }
+                        .then(function (response) {
+                            const token = response.data.access_token;
+                            localStorage.setItem('user-token', token);
+                            window.location.replace('/')
                         })
-                        .catch(function (error) {
-                            console.error(error.response);
-                        });
+                        .catch(function () {
+                            localStorage.removeItem('user-token');
+                        })
                 }
             }
         }

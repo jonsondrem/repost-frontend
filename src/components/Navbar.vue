@@ -18,6 +18,8 @@
 </template>
 
 <script>
+    import axios from 'axios'
+
     export default {
         name: "Navbar",
         data: function () {
@@ -26,10 +28,17 @@
             }
         },
         created() {
-            fetch('http://127.0.0.1:8000/api/users/me')
-                .then(response => response.json())
-                .then(json => {
-                    this.user = json.username;
+            let token = localStorage.getItem('user-token');
+            axios.get('http://127.0.0.1:8000/api/users/me', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+                .then(response => {
+                    this.user = response.data.username;
+                })
+                .catch(function () {
+                    //Nothing happens
                 })
         }
     }
