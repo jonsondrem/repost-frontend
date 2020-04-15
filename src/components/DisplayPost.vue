@@ -1,5 +1,6 @@
 <template>
     <div class="post-info">
+        <Navbar></Navbar>
         <div v-if="postExist" class="post">
             <div class="circle">
                 <div v-if="user.avatar_url != null">
@@ -23,8 +24,10 @@
 </template>
 
 <script>
+    import Navbar from "./Navbar";
     export default {
         name: "DisplayPost",
+        components: {Navbar},
         props: {
             post_id: {
                 type: String,

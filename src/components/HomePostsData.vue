@@ -1,5 +1,6 @@
 <template>
     <div id="post-data" class="post-data">
+        <Navbar></Navbar>
         <div class="post-list">
             <div class="post" v-bind:key="index" v-for="(post, index) in posts">
                 <div class="post-circle"></div>
@@ -43,8 +44,10 @@
 </template>
 
 <script>
+    import Navbar from "./Navbar";
     export default {
         name: "PostData",
+        components: {Navbar},
         data: function () {
             return {
                 posts: [],

@@ -14,11 +14,11 @@
                 <input type="submit" value="Login" @click="handleSubmit" class="login_button">
             </form>
         </div>
+        <div v-show="err" class="err">Username or password wrong</div>
     </div>
 </template>
 
 <script>
-    import axios from 'axios';
     import qs from 'qs';
 
     export default {
@@ -26,7 +26,8 @@
         data() {
             return {
                 username: '',
-                password: ''
+                password: '',
+                err: false
             }
         },
         methods: {
@@ -37,19 +38,20 @@
                     password: this.password
                 });
                 if (this.password.length > 0) {
-                    axios.post('http://127.0.0.1:8000/api/auth/token', data, {
+                    this.$http.post('/auth/token', data, {
                         headers: {
                             'content-type': 'application/x-www-form-urlencoded'
                         },
                         withCredentials: true
                     })
-                        .then(function (response) {
+                        .then((response) => {
                             const token = response.data.access_token;
                             localStorage.setItem('user-token', token);
                             window.location.replace('/')
                         })
-                        .catch(function () {
+                        .catch(() => {
                             localStorage.removeItem('user-token');
+                            this.err = true;
                         })
                 }
             }
@@ -127,6 +129,20 @@
 
     .login_button:hover {
         color: white;
+    }
+
+    .err {
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%);
+        width: 250px;
+        background-color: #2e2e2e;
+        border-radius: 5px;
+        height: 24px;
+        margin-top: 8px;
+        text-align: center;
+        vertical-align: middle;
+        color: #ff0000;
     }
 
 

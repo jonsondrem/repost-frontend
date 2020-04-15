@@ -18,8 +18,6 @@
 </template>
 
 <script>
-    import axios from 'axios'
-
     export default {
         name: "Navbar",
         data: function () {
@@ -29,7 +27,7 @@
         },
         created() {
             let token = localStorage.getItem('user-token');
-            axios.get('http://127.0.0.1:8000/api/users/me', {
+            this.$http.get('/users/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
