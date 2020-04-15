@@ -1,5 +1,6 @@
 <template>
     <div class="resub-list">
+        <Navbar></Navbar>
         <div class="resub-list-header">
             <div>Resub List</div>
         </div>
@@ -13,8 +14,10 @@
 </template>
 
 <script>
+    import Navbar from "./Navbar";
     export default {
         name: "ResubsList",
+        components: {Navbar},
         data: function () {
             return {
                 resubs: []

@@ -1,5 +1,6 @@
 <template>
     <div class="resub-page">
+        <Navbar></Navbar>
         <div v-if="resubExist">
             <div id="post-data" class="post-data">
                 <div class="post-list">
@@ -48,8 +49,10 @@
 </template>
 
 <script>
+    import Navbar from "./Navbar";
     export default {
         name: "ResubPostsData",
+        components: {Navbar},
         props: {
             resubname: {
                 type: String,

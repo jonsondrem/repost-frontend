@@ -1,5 +1,6 @@
 <template>
     <div class="user-info">
+        <Navbar></Navbar>
         <div v-if="userExist" class="user">
             <div class="circle">
                 <div v-if="user.avatar_url != null">
@@ -42,8 +43,10 @@
 </template>
 
 <script>
+    import Navbar from "./Navbar";
     export default {
         name: "DisplayUser",
+        components: {Navbar},
         props: {
             username: {
                 type: String,
