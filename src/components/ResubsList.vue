@@ -1,14 +1,17 @@
 <template>
-    <div class="resub-list">
+    <div>
         <Navbar></Navbar>
-        <div class="resub-list-header">
-            <div>Resub List</div>
-        </div>
-        <div v-for="(resub, index) in resubs" v-bind:key="index" class="resub-panel">
-            <a v-bind:href="'/resubs/' + resub.name + '/posts'" class="resub-link"></a>
-            <div class="left">Resub: <span>{{ resub.name }}</span></div>
-            <div class="right">Owner: <a v-bind:href="'/users/' + resub.owner_username">{{ resub.owner_username }}</a></div>
-            <div class="bottom">Desc: {{ resub.description }}</div>
+        <div class="resub-list">
+            <div class="resub-list-header">
+                <div>Resub List</div>
+            </div>
+            <div v-for="(resub, index) in resubs" v-bind:key="index" class="resub-panel">
+                <a v-bind:href="'/resubs/' + resub.name + '/posts'" class="resub-link"></a>
+                <div class="left">Resub: <span>{{ resub.name }}</span></div>
+                <div class="right">Owner: <a v-bind:href="'/users/' + resub.owner_username">{{ resub.owner_username
+                    }}</a></div>
+                <div class="bottom">Desc: {{ resub.description }}</div>
+            </div>
         </div>
     </div>
 </template>
