@@ -1,7 +1,7 @@
 <template>
     <div class="user-info">
         <Navbar></Navbar>
-        <div v-if="userExist" class="user">
+        <div v-if="user != null" class="user">
             <div class="circle">
                 <div v-if="user.avatar_url != null">
                     <img v-bind:src="user.avatar_url" alt="Profile Picture">
@@ -11,13 +11,15 @@
             <div class="username">User: <span>{{ username }}</span></div>
             <div class="info">
                 <div class="section-header">Bio:</div>
-                <div class="content" v-if="user.bio === null">This user has currently no bio.</div>
+                <div class="content" v-if="user.bio == null">This user has currently no bio.</div>
                 <div class="content" v-else>{{ user.bio }}</div>
 
                 <div class="section-header">Owned Resubs:</div>
                 <div class="content" v-if="resubs.length > 0">
                     <div v-for="(resub, index) in resubs" v-bind:key="index">
-                        <a class="link" v-bind:href="'/resubs/' + resub.name + '/posts'">{{ resub.name }}</a>
+                        <router-link v-bind:to="`/resubs/${resub.name}/posts`">
+                            <a class="link">{{ resub.name }}</a>
+                        </router-link>
                     </div>
                 </div>
                 <div class="content" v-else>This user currently doesn't own a resub.</div>
@@ -25,10 +27,12 @@
                 <div class="section-header">Posts:</div>
                 <div class="content" v-if="posts.length > 0">
                     <div v-for="(post, index) in posts" v-bind:key="index">
-                        "<a class="link" v-bind:href="'/resubs/' + post.parent_resub_name + '/posts/' + post.id">{{
-                            post.title }}</a>" in resub <a class="link"
-                                                           v-bind:href="'/resubs/' + post.parent_resub_name + '/posts'">{{
-                        post.parent_resub_name }}</a>
+                        "<router-link v-bind:to="'/resubs/' + post.parent_resub_name + '/posts/' + post.id">
+                            <a class="link">{{ post.title }}</a>
+                        </router-link>" in resub
+                        <router-link v-bind:to="`/resubs/${post.parent_resub_name}/posts`">
+                            <a class="link">{{ post.parent_resub_name }}</a>
+                        </router-link>
                     </div>
                 </div>
                 <div class="content" v-else>This user hasn't made a post yet.</div>
@@ -43,9 +47,9 @@
 </template>
 
 <script>
-    import Navbar from "./Navbar";
+    import Navbar from '@/components/Navbar';
     export default {
-        name: "DisplayUser",
+        name: "User",
         components: {Navbar},
         props: {
             username: {
@@ -56,45 +60,20 @@
         },
         data: function() {
             return {
-                userExist: false,
-                user: {
-                    "username": null,
-                    "bio": null,
-                    "avatar_url": null,
-                    "created": null,
-                    "edited": null
-                },
+                user: null,
                 resubs: [],
                 posts: []
             }
         },
-        created() {
-            fetch('http://127.0.0.1:8000/api/users/' + this.username )
-                .then(response => response.json()
-                .then(json => ({
-                    status: response.status,
-                    body: json
-                })))
-                .then(obj => {
-                    if (obj.status == 200) {
-                        this.userExist = true;
-                        this.user = obj.body;
-                    }
-                });
-            fetch('http://127.0.0.1:8000/api/users/' + this.username + '/resubs')
-                .then(response => response.json())
-                .then(json => {
-                    for (const i in json) {
-                        this.resubs.push(json[i]);
-                    }
-                });
-            fetch('http://127.0.0.1:8000/api/users/' + this.username + '/posts')
-                .then(response => response.json())
-                .then(json => {
-                    for (const i in json) {
-                        this.posts.push(json[i]);
-                    }
-                });
+        async created() {
+            try {
+                this.user = (await this.$http.get(`/users/${this.username}`)).data
+            } catch (error) {
+                return;
+            }
+
+            this.resubs = (await this.$http.get(`/users/${this.user.username}/resubs`)).data
+            this.posts = (await this.$http.get(`/users/${this.user.username}/posts`)).data
         }
     }
 </script>

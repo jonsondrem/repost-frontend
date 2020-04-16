@@ -1,23 +1,23 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Login from '@/components/Login'
-import DisplayUser from '@/components/DisplayUser';
-import HomePostsData from "@/components/HomePostsData";
-import ResubPostsData from "@/components/ResubPostsData";
-import ResubsList from "@/components/ResubsList";
-import DisplayPost from "@/components/DisplayPost";
+import Login from '@/views/Login'
+import User from '@/views/User';
+import Home from "@/views/Home";
+import Resub from "@/views/Resub";
+import Resubs from "@/views/Resubs";
+import Post from "@/views/Post";
 
 Vue.use(VueRouter);
 
 const routes = [
-    {path: '/', component: HomePostsData, redirect: ''},
+    {path: '/', component: Home, redirect: ''},
+    {path: '/users', component: Home},
     {path: '/login', component: Login},
-    {path: '/users/:username', component: DisplayUser, props: true},
-    {path: '/users', component: HomePostsData},
-    {path: '/resubs/:resubname/posts', component: ResubPostsData, props: true},
-    {path: '/resubs', component: ResubsList},
-    {path: '/resubs/:resubname', redirect: '/resubs/:resubname/posts', component: ResubPostsData, props: true},
-    {path: '/resubs/:resubname/posts/:post_id', component: DisplayPost, props: true}
+    {path: '/users/:username', component: User, props: true},
+    {path: '/resubs', component: Resubs},
+    {path: '/resubs/:resubname/posts', component: Resub, props: true},
+    {path: '/resubs/:resubname', redirect: '/resubs/:resubname/posts', component: Resub, props: true},
+    {path: '/resubs/:resubname/posts/:post_id', component: Post, props: true}
 ];
 
 const router = new VueRouter( {

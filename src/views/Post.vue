@@ -1,15 +1,25 @@
 <template>
     <div class="post-info">
         <Navbar></Navbar>
-        <div v-if="postExist" class="post">
+        <div v-if="post != null" class="post">
             <div class="circle">
-                <div v-if="user.avatar_url != null">
+                <div v-if="user != null && user.avatar_url != null">
                     <img v-bind:src="user.avatar_url" alt="Profile Picture">
                 </div>
                 <div v-else>No Avatar</div>
             </div>
-            <div class="author">Author: <a v-bind:href="'/users/' + user.username">{{ user.username }}</a></div>
-            <div class="resub">- Resub: <a v-bind:href="'/resubs/' + post.parent_resub_name + '/posts/'">{{ post.parent_resub_name }}</a></div>
+            <div class="author">Author:
+                <span v-if="user != null">
+                    <router-link v-bind:to="`/users/${user.username}`">
+                        <a>{{ user.username }}</a>
+                    </router-link>
+                </span>
+                <span v-else>unknown</span>
+            </div>
+
+            <div class="resub">- Resub: <router-link v-bind:to="`/resubs/${post.parent_resub_name}/posts/`">
+                <a>{{ post.parent_resub_name }}</a>
+            </router-link></div>
             <div class="info">
                 <div class="section-header">{{ post.title }}</div>
                 <div class="content">{{ post.content }}</div>
@@ -24,9 +34,10 @@
 </template>
 
 <script>
-    import Navbar from "./Navbar";
+    import Navbar from '@/components/Navbar';
+
     export default {
-        name: "DisplayPost",
+        name: "Post",
         components: {Navbar},
         props: {
             post_id: {
@@ -42,49 +53,27 @@
         },
         data: function() {
             return {
-                postExist: false,
-                post: {
-                    "id": null,
-                    "parent_resub_name": null,
-                    "title": null,
-                    "url": null,
-                    "content": null,
-                    "author_username": null,
-                    "created": null,
-                    "edited": null,
-                    "votes": null
-                },
-                user: {
-                    "username": null,
-                    "bio": null,
-                    "avatar_url": null,
-                    "created": null,
-                    "edited": null
-                }
+                post: null,
+                user: null
             }
         },
-        created() {
-            fetch('http://127.0.0.1:8000/api/posts/' + this.post_id)
-                .then(response => response.json()
-                    .then(json => ({
-                        status: response.status,
-                        body: json
-                    })))
-                .then(obj => {
-                    if (obj.status == 200) {
-                        if (obj.body.parent_resub_name === this.resubname) {
-                            this.postExist = true;
-                            this.post = obj.body;
-                            console.log('Fetched post')
-                            fetch('http://127.0.0.1:8000/api/users/' + this.post.author_username)
-                                .then(response => response.json())
-                                .then(json => {
-                                    console.log('fetched user')
-                                    this.user = json;
-                                })
-                        }
-                    }
-                });
+        async created() {
+            try {
+                this.post = (await this.$http.get(`/posts/${this.post_id}`)).data
+            } catch (error) {
+                return;
+            }
+
+            if (this.post.parent_resub_name !== this.resubname) {
+                this.post = null
+                return
+            }
+
+            try {
+                this.user = (await this.$http.get(`/users/${this.post.author_username}`)).data
+            } catch (error) {
+                // Ignore and leave this.user as null
+            }
         }
     }
 </script>
