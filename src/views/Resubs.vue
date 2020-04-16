@@ -6,10 +6,11 @@
                 <div>Resub List</div>
             </div>
             <div v-for="(resub, index) in resubs" v-bind:key="index" class="resub-panel">
-                <a v-bind:href="'/resubs/' + resub.name + '/posts'" class="resub-link"></a>
+                <router-link v-bind:to="`/resubs/${resub.name}/posts`" class="resub-link"></router-link>
                 <div class="left">Resub: <span>{{ resub.name }}</span></div>
-                <div class="right">Owner: <a v-bind:href="'/users/' + resub.owner_username">{{ resub.owner_username
-                    }}</a></div>
+                <div class="right">Owner: <router-link v-bind:to="`/users/${resub.owner_username}`">
+                    <a>{{ resub.owner_username }}</a>
+                </router-link></div>
                 <div class="bottom">Desc: {{ resub.description }}</div>
             </div>
         </div>
@@ -17,23 +18,17 @@
 </template>
 
 <script>
-    import Navbar from "./Navbar";
+    import Navbar from "@/components/Navbar";
     export default {
-        name: "ResubsList",
+        name: "Resubs",
         components: {Navbar},
         data: function () {
             return {
                 resubs: []
             }
         },
-        created() {
-            fetch('http://127.0.0.1:8000/api/resubs/')
-                .then(response => response.json())
-                .then(json => {
-                    for (const i in json) {
-                        this.resubs.push(json[i])
-                    }
-                })
+        async created() {
+            this.resubs = (await this.$http.get('/resubs')).data
         }
     }
 </script>

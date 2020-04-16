@@ -11,10 +11,10 @@
                 <input type="text" id="username" name="username" v-model="username" class="field"><br>
                 <label for="password">Password</label><br>
                 <input type="password" id="password" name="password" v-model="password" class="field"><br>
-                <input type="submit" value="Login" @click="handleSubmit" class="login_button">
+                <input type="submit" value="Login" @click="login" class="login_button">
             </form>
         </div>
-        <div v-show="err" class="err">Username or password wrong</div>
+        <div v-show="errored" class="err">Username or password wrong</div>
     </div>
 </template>
 
@@ -22,37 +22,30 @@
     import qs from 'qs';
 
     export default {
-        name: "Login.vue",
+        name: "Login",
         data() {
             return {
                 username: '',
                 password: '',
-                err: false
+                errored: false
             }
         },
         methods: {
-            handleSubmit(e) {
+            async login(e) {
                 e.preventDefault();
-                let data = qs.stringify({
+
+                const data = qs.stringify({
                     username: this.username,
                     password: this.password
                 });
-                if (this.password.length > 0) {
-                    this.$http.post('/auth/token', data, {
-                        headers: {
-                            'content-type': 'application/x-www-form-urlencoded'
-                        },
-                        withCredentials: true
-                    })
-                        .then((response) => {
-                            const token = response.data.access_token;
-                            localStorage.setItem('user-token', token);
-                            window.location.replace('/')
-                        })
-                        .catch(() => {
-                            localStorage.removeItem('user-token');
-                            this.err = true;
-                        })
+
+                try {
+                    const oauth_token = (await this.$http.post('/auth/token', data)).data
+                    localStorage.userToken = oauth_token.access_token
+                    await this.$router.push('/')
+                }
+                catch (error) {
+                    this.errored = true;
                 }
             }
         }

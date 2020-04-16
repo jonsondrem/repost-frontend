@@ -548,7 +548,7 @@
     try {
       var opts = {};
       Object.defineProperty(opts, 'passive', ({
-        get: function get () {
+        getData: function get () {
           /* istanbul ignore next */
           supportsPassive = true;
         }
@@ -1036,7 +1036,7 @@
     Object.defineProperty(obj, key, {
       enumerable: true,
       configurable: true,
-      get: function reactiveGetter () {
+      getData: function reactiveGetter () {
         var value = getter ? getter.call(obj) : val;
         if (Dep.target) {
           dep.depend();
@@ -2609,7 +2609,7 @@
     // on this.$slots because the usage is semantically a normal slot.
     if (fn.proxy) {
       Object.defineProperty(normalSlots, key, {
-        get: normalized,
+        getData: normalized,
         enumerable: true,
         configurable: true
       });
@@ -3005,7 +3005,7 @@
 
     Object.defineProperty(this, 'scopedSlots', ({
       enumerable: true,
-      get: function get () {
+      getData: function get () {
         return normalizeScopedSlots(data.scopedSlots, this.slots())
       }
     }));
@@ -5428,11 +5428,11 @@
   initGlobalAPI(Vue);
 
   Object.defineProperty(Vue.prototype, '$isServer', {
-    get: isServerRendering
+    getData: isServerRendering
   });
 
   Object.defineProperty(Vue.prototype, '$ssrContext', {
-    get: function get () {
+    getData: function get () {
       /* istanbul ignore next */
       return this.$vnode && this.$vnode.ssrContext
     }

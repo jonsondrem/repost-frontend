@@ -1,17 +1,25 @@
 <template>
     <div class="navbar">
         <div class="logo" id="logo">
-            <a href="/">
+            <router-link to="/">
                 <img src="../assets/Logo.png" alt="logo">
-            </a>
+            </router-link>
         </div>
 
         <div class="topnav" id="topnav">
-            <a href="/resubs">Resubs</a>
-            <a href="/support">Support</a>
+            <router-link to="/resubs">
+                <a>Resubs</a>
+            </router-link>
+            <router-link to="/support">
+                <a>Support</a>
+            </router-link>
             <div class="login" id="login">
-                <a v-if="typeof(user) === 'undefined' || user === null" href="/login">Login</a>
-                <a v-bind:href="'/users/' + user" v-else>{{ user }}</a>
+                <router-link v-if="user === null" to="/login">
+                    <a>Login</a>
+                </router-link>
+                <router-link v-bind:to="`/users/${user.username}`" v-else>
+                    <a>{{ user.username }}</a>
+                </router-link>
             </div>
         </div>
     </div>
@@ -25,19 +33,13 @@
                 user: null
             }
         },
-        created() {
-            let token = localStorage.getItem('user-token');
-            this.$http.get('/users/me', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            })
-                .then(response => {
-                    this.user = response.data.username;
-                })
-                .catch(function () {
-                    //Nothing happens
-                })
+        async created() {
+            // Only attempt to load the current user if token is not stored
+            if (!localStorage.userToken) {
+                return
+            }
+
+            this.user = (await this.$http.get('/users/me')).data
         }
     }
 </script>
