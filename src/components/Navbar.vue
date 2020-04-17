@@ -7,21 +7,15 @@
         </div>
 
         <div class="topnav" id="topnav">
-            <router-link to="/resubs">
-                <a>Resubs</a>
-            </router-link>
-            <router-link to="/support">
-                <a>Support</a>
-            </router-link>
+            <div class="left">
+                <router-link to="/resubs" class="nav-button">Resubs</router-link>
+                <router-link to="/support" class="nav-button">Support</router-link>
+            </div>
 
-            <div class="login" id="login">
-                <router-link :to="`/users/${user.username}`" v-if="user">
-                    <a>{{ user.username }}</a>
-                </router-link>
-                <router-link to="/login" v-else-if="loaded">
-                    <a>Login</a>
-                </router-link>
-                <select v-model="selectedApiUrl" @change="changeApiUrl">
+            <div class="right" id="login">
+                <router-link :to="`/users/${user.username}`" v-if="user" class="nav-button">{{ user.username }}</router-link>
+                <router-link to="/login" v-else-if="loaded" class="nav-button">Login</router-link>
+                <select v-model="selectedApiUrl" @change="changeApiUrl" class="nav-button">
                     <option v-for="api in apis" :key="api.name" :value="api.url">
                         {{ api.name }}
                     </option>
@@ -103,36 +97,30 @@
     }
 
     /* Style the links inside the navigation bar */
-    .topnav a {
-        float: left;
+    .nav-button {
+        display: inline-block;
+        padding: 24px 12px;
         color: #45b1ff;
-        padding: 6px 16px;
-        text-decoration: none;
+        font-family: Consolas, monaco, monospace;
         font-size: 17px;
         font-weight: bold;
         transition: 0.2s;
     }
 
-    .topnav a:hover {
+    .nav-button:hover {
         color: #ffffff;
+    }
+
+    .topnav a {
+        text-decoration: none;
     }
 
     .topnav select {
-        position: absolute;
-        color: #45b1ff;
         background: none;
         border: none;
-        font-size: 17px;
-        font-weight: bold;
-        transition: 0.2s;
         cursor: pointer;
-        font-family: Consolas, monaco, monospace;
-        right: 0;
-        bottom: 0;
-    }
-
-    .topnav select:hover {
-        color: #ffffff;
+        padding-right: 0;
+        margin-right: 12px;
     }
 
     .topnav select option {
@@ -140,7 +128,11 @@
         font-size: 17px;
     }
 
-    .right {
+    .topnav .left {
+        float: left;
+    }
+
+    .topnav .right {
         float: right;
     }
 </style>
