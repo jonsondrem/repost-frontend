@@ -3,7 +3,7 @@
         <Navbar></Navbar>
 
         <div v-if="resub != null && user != null" class="create-post">
-            <router-link :to="{ name: 'CreatePost', params: { user, resub} }">
+            <router-link :to="{ name: 'PostForm', params: { resub_name: resub.name } }">
                 <a>Create Post</a>
             </router-link>
         </div>

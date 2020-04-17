@@ -20,6 +20,21 @@
             <div class="resub">- Resub: <router-link v-bind:to="`/resubs/${post.parent_resub_name}/posts/`">
                 <a>{{ post.parent_resub_name }}</a>
             </router-link></div>
+
+            <div v-if="current_user != null && user != null">
+                <div v-if="user.username === current_user.username" class="edit-delete">
+                    <router-link :to="{name: 'PostForm',
+                        params: { resubname: post.parent_resub_name,
+                            post_id: post_id,
+                            title: post.title,
+                            pic_url: post.url,
+                            content: post.content } }">
+                        <a>Edit</a>
+                    </router-link> -
+                    <span @click="deletePost" class="delete">Delete</span>
+                </div>
+            </div>
+
             <div class="info">
                 <div class="section-header">{{ post.title }}</div>
                 <div class="content">{{ post.content }}</div>
@@ -42,7 +57,7 @@
         props: {
             post_id: {
                 type: String,
-                default: '',
+                default: null,
                 required: true
             },
             resubname: {
@@ -54,7 +69,8 @@
         data: function() {
             return {
                 post: null,
-                user: null
+                user: null,
+                current_user: null
             }
         },
         async created() {
@@ -71,8 +87,19 @@
 
             try {
                 this.user = (await this.$http.get(`/users/${this.post.author_username}`)).data
+                this.current_user = (await this.$http.get('/users/me')).data
             } catch (error) {
                 // Ignore and leave this.user as null
+            }
+        },
+        methods: {
+            async deletePost() {
+                try {
+                   await this.$http.delete(`/posts/${this.post_id}`)
+                   await this.$router.push(`/resubs/${this.post.parent_resub_name}/posts/`)
+                } catch (error) {
+                    //
+                }
             }
         }
     }
@@ -143,6 +170,30 @@
 
     .resub a:hover {
         text-decoration: underline;
+    }
+
+    .edit-delete {
+        float: right;
+        font-size: 12px;
+    }
+
+    .edit-delete a {
+        text-decoration: none;
+        color: white;
+        margin-bottom: 2px;
+    }
+
+    .edit-delete a:hover {
+        text-decoration: underline;
+    }
+
+    .edit-delete span {
+        color: #ff0000;
+    }
+
+    .edit-delete span:hover {
+        text-decoration: underline;
+        cursor: pointer;
     }
 
     .info {

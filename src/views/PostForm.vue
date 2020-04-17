@@ -4,22 +4,23 @@
         <div class="section">
             <div class="create-post">
                 <div class="header">
-                    <div>Create post in resub: <span>{{ resub.name }}</span></div>
+                    <div><span class="create-edit" v-if="post_id == null">Create</span><span v-else>Edit</span> post in resub: <span class="resub-name">{{ resubname }}</span></div>
                 </div>
                 <div class="form">
                     <form>
                         <label>Title*</label><br>
-                        <input type="text" v-model="title"><br>
+                        <input type="text" v-model="dTitle" value="dTitle"><br>
                         <label>Content*</label><br>
-                        <textarea v-model="content" class="content"></textarea><br>
+                        <textarea v-model="dContent" class="content">dContent</textarea><br>
                         <label>URL to picture</label><br>
-                        <input type="text" v-model="url"><br>
-                        <button value="Create" @click="createPost" class="create_button" type="button">Create Post
+                        <input type="text" v-model="dPic_url" value="dPic_url"><br>
+                        <button value="Create" @click="submitPost" class="button" type="button">
+                            <span v-if="post_id == null">Create</span><span v-else>Edit</span> Post
                         </button>
                     </form>
                 </div>
             </div>
-            <div v-show="errored" class="err">You need to fill in title and content.</div>
+            <div v-show="errored" class="err">{{ errormsg }}</div>
         </div>
     </div>
 </template>
@@ -28,54 +29,79 @@
     import Navbar from '@/components/Navbar';
 
     export default {
-        name: "CreatePost",
+        name: "PostForm",
         components: {Navbar},
         props: {
-            user: {
-                type: Object,
-                default: null,
+            resubname: {
+                type: String,
+                default: '',
                 required: true
             },
-            resub: {
-                type: Object,
+            post_id: {
+                type: String,
                 default: null,
-                required: true
+            },
+            title: {
+                type: String,
+                default: ''
+            },
+            pic_url: {
+                type: String,
+                default: ''
+            },
+            content: {
+                type: String,
+                default: ''
             }
         },
         data() {
             return {
-                title: '',
-                url: '',
-                content: '',
-                errored: false
+                dTitle: null,
+                dPic_url: null,
+                dContent: null,
+                errored: false,
+                errormsg: ''
             }
         },
         methods: {
-            async createPost() {
-                if(this.title.length == 0) {
+            async submitPost() {
+                if(this.dTitle.length == 0) {
                     this.errored = true
+                    this.errormsg = 'You need a title'
                     return
                 }
-                if(this.content.length == 0) {
+                if(this.dContent.length == 0) {
                     this.errored = true
+                    this.errormsg = 'You need to fill in something in content.'
                     return
                 }
 
                 const data = {
-                    title: this.title,
-                    url: this.url,
-                    content: this.content
+                    title: this.dTitle,
+                    url: this.dPic_url,
+                    content: this.dContent
                 }
 
                 try {
-                    const post = (await this.$http.post(`/resubs/${this.resub.name}/posts`, data)).data
-                    this.$router.push(`/resubs/${this.resub.name}/posts/${post.id}`)
+                    if(this.post_id == null) {
+                        const post = (await this.$http.post(`/resubs/${this.resubname}/posts`, data)).data
+                        await this.$router.push(`/resubs/${this.resubname}/posts/${post.id}`)
+                    }
+                    else {
+                        await this.$http.patch(`/posts/${this.post_id}`, data).data
+                        await this.$router.push(`/resubs/${this.resubname}/posts/${this.post_id}`)
+                    }
                 }
                 catch (error) {
-                    this.errormsg = 'Something went wrong LOL'
+                    this.errormsg = 'Something went wrong while submitting info to server. Check your connection.'
                 }
 
             }
+        },
+        created() {
+            this.dTitle = this.title;
+            this.dPic_url = this.pic_url;
+            this.dContent = this.content;
         }
     }
 </script>
@@ -109,7 +135,7 @@
         text-align: center;
     }
 
-    .header span {
+    .header .resub-name {
         color: #45b1ff;
     }
 
@@ -139,7 +165,7 @@
         border-style: none;
     }
 
-    .create_button {
+    .button {
         position: relative;
         left: 50%;
         transform: translate(-50%);
@@ -153,7 +179,7 @@
         margin-bottom: 24px;
     }
 
-    .create_button:hover {
+    .button:hover {
         color: white;
     }
 
