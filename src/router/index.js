@@ -7,6 +7,7 @@ import Resub from "@/views/Resub";
 import Resubs from "@/views/Resubs";
 import Post from "@/views/Post";
 import NotFound from "@/views/NotFound"
+import NProgress from 'nprogress'
 
 Vue.use(VueRouter);
 
@@ -25,6 +26,13 @@ const routes = [
 const router = new VueRouter( {
     mode: 'history',
     routes
+})
+
+router.beforeEach((to, from, next) => {
+    if (!NProgress.isStarted() && to.path) {
+        NProgress.start()
+    }
+    next()
 })
 
 export default router;

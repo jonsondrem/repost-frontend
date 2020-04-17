@@ -1,9 +1,9 @@
 <template>
     <div class="login">
         <div class="circle">
-            <a href="/">
+            <router-link to="/">
                 <img src="../assets/Logo.png" alt="logo">
-            </a>
+            </router-link>
         </div>
         <div class="form">
             <form class="login_form">
@@ -23,16 +23,20 @@
 
     export default {
         name: "Login",
-        data() {
+        data () {
             return {
                 username: '',
                 password: '',
                 errored: false
             }
         },
+        created () {
+            this.$loaded()
+        },
         methods: {
-            async login(e) {
+            async login (e) {
                 e.preventDefault();
+                this.$load()
 
                 const data = qs.stringify({
                     username: this.username,
@@ -46,6 +50,7 @@
                 }
                 catch (error) {
                     this.errored = true;
+                    this.$loaded()
                 }
             }
         }

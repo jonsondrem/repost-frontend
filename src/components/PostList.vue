@@ -1,12 +1,12 @@
 <template>
     <div class="post-list">
-        <div class="post" v-bind:key="index" v-for="(post, index) in posts">
+        <div class="post" v-for="post in posts" :key="post.id">
             <div class="post-circle"></div>
             <div class="post-info">
-                <router-link v-bind:to="`/resubs/${post.parent_resub_name}/posts/${post.id}`" class="post-link"></router-link>
+                <router-link :to="`/resubs/${post.parent_resub_name}/posts/${post.id}`" class="post-link"></router-link>
                 <div class="post-info-left">
                     <span class="post-info-space">By </span>
-                    <router-link v-bind:to="`/users/${post.author_username}`" class="post-info-user">
+                    <router-link :to="`/users/${post.author_username}`" class="post-info-user">
                         <a>{{ post.author_username }}</a>
                     </router-link>
                     <br>
@@ -23,16 +23,20 @@
     export default {
         name: 'PostList',
         props: {
-            posts: {}
+            posts: {
+                type: Array,
+                default: () => [],
+                required: true
+            }
         },
         methods: {
-            getVoteColor: function (vote) {
-                if (vote === 0) {
-                    return 'color: #ffffff';
+            getVoteColor (vote) {
+                if (vote > 0) {
+                    return 'color: #00ff73';
                 } else if (vote < 0) {
                     return 'color: #ff0000';
                 }
-                return 'color: #00ff73';
+                return 'color: #ffffff';
             }
         }
     }

@@ -3,16 +3,16 @@
         <Navbar/>
         <PostList :posts="posts"/>
 
-        <div v-if="topPost != null" class="top-rated-post">
-            <router-link v-bind:to="`resubs/${topPost.parent_resub_name}/posts/${topPost.id}`" class="post-link"></router-link>
+        <div v-if="topPost" class="top-rated-post">
+            <router-link :to="`resubs/${topPost.parent_resub_name}/posts/${topPost.id}`" class="post-link"></router-link>
             <div class="top-rated-post-top">
                 <span class="top-post-title">Top Rated Post</span>
                 <span class="post-info-space">From </span>
-                <router-link v-bind:to="`resubs/${topPost.parent_resub_name}`" class="post-info-resub">
+                <router-link :to="`resubs/${topPost.parent_resub_name}`" class="post-info-resub">
                     <a>{{ topPost.parent_resub_name }}</a>
                 </router-link> -
                 <span class="post-info-space">By </span>
-                <router-link v-bind:to="`users/${topPost.author_username}`" class="top-author">
+                <router-link :to="`users/${topPost.author_username}`" class="top-author">
                     <a>{{ topPost.author_username }}</a>
                 </router-link>
                 -
@@ -23,7 +23,7 @@
                 <p class="top-rated-post-content">{{ topPost.content }}</p>
             </div>
         </div>
-        <div v-else class="top-rated-post">
+        <div v-else-if="loaded" class="top-rated-post">
             <div class="top-rated-post-top">
                 <span class="top-post-title">Failed to find a top post</span>
             </div>
@@ -38,21 +38,28 @@
     export default {
         name: "Home",
         components: {Navbar, PostList},
-        data: function () {
+        data () {
             return {
                 posts: [],
-                topPost: null
+                topPost: null,
+                loaded: false
             }
         },
-        async created() {
-            const resubs = (await this.$http.get('/resubs')).data
+        async created () {
+            await this.loadData()
+            this.loaded = this.$loaded()
+        },
+        methods: {
+            async loadData () {
+                const resubs = (await this.$http.get('/resubs')).data
 
-            // Load all posts from every resub concurrently
-            await Promise.all(resubs.map(resub =>
-                this.$http.get(`/resubs/${resub.name}/posts`).then(response => this.posts.push(...response.data))))
+                // Load all posts from every resub concurrently
+                await Promise.all(resubs.map(resub =>
+                    this.$http.get(`/resubs/${resub.name}/posts`).then(response => this.posts.push(...response.data))))
 
-            // Find and set the top post
-            this.topPost = this.posts.reduce((a, b) => a.votes > b.votes ? a : b)
+                // Find and set the top post
+                this.topPost = this.posts.reduce((a, b) => a.votes > b.votes ? a : b)
+            }
         }
     }
 </script>

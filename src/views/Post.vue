@@ -1,23 +1,23 @@
 <template>
     <div class="post-info">
         <Navbar></Navbar>
-        <div v-if="post != null" class="post">
+        <div v-if="post" class="post">
             <div class="circle">
-                <div v-if="user != null && user.avatar_url != null">
-                    <img v-bind:src="user.avatar_url" alt="Profile Picture">
+                <div v-if="user && user.avatar_url != null">
+                    <img :src="user.avatar_url" alt="Profile Picture">
                 </div>
-                <div v-else>No Avatar</div>
+                <div v-else-if="loaded">No Avatar</div>
             </div>
             <div class="author">Author:
                 <span v-if="user != null">
-                    <router-link v-bind:to="`/users/${user.username}`">
+                    <router-link :to="`/users/${user.username}`">
                         <a>{{ user.username }}</a>
                     </router-link>
                 </span>
-                <span v-else>unknown</span>
+                <span v-else-if="loaded">unknown</span>
             </div>
 
-            <div class="resub">- Resub: <router-link v-bind:to="`/resubs/${post.parent_resub_name}/posts/`">
+            <div class="resub">- Resub: <router-link :to="`/resubs/${post.parent_resub_name}/posts/`">
                 <a>{{ post.parent_resub_name }}</a>
             </router-link></div>
             <div class="info">
@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        <div v-else class="no-post">
+        <div v-else-if="loaded" class="no-post">
             <div class="no-post-title">Post not found!</div>
             <div class="no-post-desc">We were not able to load the post. Have you inputted the url correctly?</div>
         </div>
@@ -51,28 +51,35 @@
                 required: true
             }
         },
-        data: function() {
+        data () {
             return {
                 post: null,
-                user: null
+                user: null,
+                loaded: false
             }
         },
-        async created() {
-            try {
-                this.post = (await this.$http.get(`/posts/${this.post_id}`)).data
-            } catch (error) {
-                return;
-            }
+        async created () {
+            await this.loadData()
+            this.loaded = this.$loaded()
+        },
+        methods: {
+            async loadData () {
+                try {
+                    this.post = (await this.$http.get(`/posts/${this.post_id}`)).data
+                } catch (error) {
+                    return
+                }
 
-            if (this.post.parent_resub_name !== this.resubname) {
-                this.post = null
-                return
-            }
+                if (this.post.parent_resub_name !== this.resubname) {
+                    this.post = null
+                    return
+                }
 
-            try {
-                this.user = (await this.$http.get(`/users/${this.post.author_username}`)).data
-            } catch (error) {
-                // Ignore and leave this.user as null
+                try {
+                    this.user = (await this.$http.get(`/users/${this.post.author_username}`)).data
+                } catch (error) {
+                    // Ignore and leave this.user as null
+                }
             }
         }
     }

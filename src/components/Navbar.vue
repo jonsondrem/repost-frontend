@@ -14,11 +14,11 @@
                 <a>Support</a>
             </router-link>
             <div class="login" id="login">
-                <router-link v-if="user === null" to="/login">
-                    <a>Login</a>
-                </router-link>
-                <router-link v-bind:to="`/users/${user.username}`" v-else>
+                <router-link :to="`/users/${user.username}`" v-if="user">
                     <a>{{ user.username }}</a>
+                </router-link>
+                <router-link to="/login" v-else-if="loaded">
+                    <a>Login</a>
                 </router-link>
             </div>
         </div>
@@ -26,20 +26,29 @@
 </template>
 
 <script>
+    import 'nprogress/nprogress.js'
+    import 'nprogress/nprogress.css'
+
     export default {
         name: "Navbar",
-        data: function () {
+        data () {
             return {
-                user: null
+                user: null,
+                loaded: false
             }
         },
-        async created() {
-            // Only attempt to load the current user if token is not stored
-            if (!localStorage.userToken) {
-                return
-            }
+        async created () {
+            await this.loadData()
+            this.loaded = true
+        },
+        methods: {
+            async loadData () {
+                if (!localStorage.userToken) {
+                    return
+                }
 
-            this.user = (await this.$http.get('/users/me')).data
+                this.user = (await this.$http.get('/users/me')).data
+            }
         }
     }
 </script>

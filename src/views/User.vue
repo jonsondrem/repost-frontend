@@ -1,45 +1,45 @@
 <template>
     <div class="user-info">
         <Navbar></Navbar>
-        <div v-if="user != null" class="user">
+        <div v-if="user" class="user">
             <div class="circle">
-                <div v-if="user.avatar_url != null">
-                    <img v-bind:src="user.avatar_url" alt="Profile Picture">
+                <div v-if="user.avatar_url">
+                    <img :src="user.avatar_url" alt="Profile Picture">
                 </div>
-                <div v-else>No Avatar</div>
+                <div v-else-if="loaded">No Avatar</div>
             </div>
             <div class="username">User: <span>{{ username }}</span></div>
             <div class="info">
                 <div class="section-header">Bio:</div>
-                <div class="content" v-if="user.bio == null">This user has currently no bio.</div>
-                <div class="content" v-else>{{ user.bio }}</div>
+                <div class="content" v-if="user.bio">{{ user.bio }}</div>
+                <div class="content" v-else-if="loaded">This user has currently no bio.</div>
 
                 <div class="section-header">Owned Resubs:</div>
                 <div class="content" v-if="resubs.length > 0">
-                    <div v-for="(resub, index) in resubs" v-bind:key="index">
-                        <router-link v-bind:to="`/resubs/${resub.name}/posts`">
+                    <div v-for="resub in resubs" :key="resub.name">
+                        <router-link :to="`/resubs/${resub.name}/posts`">
                             <a class="link">{{ resub.name }}</a>
                         </router-link>
                     </div>
                 </div>
-                <div class="content" v-else>This user currently doesn't own a resub.</div>
+                <div class="content" v-else-if="loaded">This user currently doesn't own a resub.</div>
 
                 <div class="section-header">Posts:</div>
                 <div class="content" v-if="posts.length > 0">
-                    <div v-for="(post, index) in posts" v-bind:key="index">
-                        "<router-link v-bind:to="'/resubs/' + post.parent_resub_name + '/posts/' + post.id">
+                    <div v-for="post in posts" :key="post.id">
+                        "<router-link :to="'/resubs/' + post.parent_resub_name + '/posts/' + post.id">
                             <a class="link">{{ post.title }}</a>
                         </router-link>" in resub
-                        <router-link v-bind:to="`/resubs/${post.parent_resub_name}/posts`">
+                        <router-link :to="`/resubs/${post.parent_resub_name}/posts`">
                             <a class="link">{{ post.parent_resub_name }}</a>
                         </router-link>
                     </div>
                 </div>
-                <div class="content" v-else>This user hasn't made a post yet.</div>
+                <div class="content" v-else-if="loaded">This user hasn't made a post yet.</div>
             </div>
         </div>
 
-        <div v-else class="no-user">
+        <div v-else-if="loaded" class="no-user">
             <div class="no-user-title">User not found!</div>
             <div class="no-user-desc">We were not able to load the user. Have you inputted the url correctly?</div>
         </div>
@@ -58,24 +58,31 @@
                 required: true
             }
         },
-        data: function() {
+        data () {
             return {
                 user: null,
                 resubs: [],
-                posts: []
+                posts: [],
+                loaded: false
             }
         },
-        async created() {
-            try {
-                this.user = (await this.$http.get(`/users/${this.username}`)).data
-            } catch (error) {
-                return;
-            }
+        async created () {
+            await this.loadData()
+            this.loaded = this.$loaded()
+        },
+        methods: {
+            async loadData () {
+                try {
+                    this.user = (await this.$http.get(`/users/${this.username}`)).data
+                } catch (error) {
+                    return;
+                }
 
-            await Promise.all([
-                this.$http.get(`/users/${this.user.username}/resubs`).then(response => this.resubs = response.data),
-                this.$http.get(`/users/${this.user.username}/posts`).then(response => this.posts = response.data)
-            ])
+                await Promise.all([
+                    this.$http.get(`/users/${this.user.username}/resubs`).then(response => this.resubs = response.data),
+                    this.$http.get(`/users/${this.user.username}/posts`).then(response => this.posts = response.data)
+                ])
+            }
         }
     }
 </script>

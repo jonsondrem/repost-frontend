@@ -5,10 +5,10 @@
             <div class="resub-list-header">
                 <div>Resub List</div>
             </div>
-            <div v-for="(resub, index) in resubs" v-bind:key="index" class="resub-panel">
-                <router-link v-bind:to="`/resubs/${resub.name}/posts`" class="resub-link"></router-link>
+            <div v-for="resub in resubs" :key="resub.name" class="resub-panel">
+                <router-link :to="`/resubs/${resub.name}/posts`" class="resub-link"></router-link>
                 <div class="left">Resub: <span>{{ resub.name }}</span></div>
-                <div class="right">Owner: <router-link v-bind:to="`/users/${resub.owner_username}`">
+                <div class="right">Owner: <router-link :to="`/users/${resub.owner_username}`">
                     <a>{{ resub.owner_username }}</a>
                 </router-link></div>
                 <div class="bottom">Desc: {{ resub.description }}</div>
@@ -22,13 +22,19 @@
     export default {
         name: "Resubs",
         components: {Navbar},
-        data: function () {
+        data () {
             return {
                 resubs: []
             }
         },
-        async created() {
-            this.resubs = (await this.$http.get('/resubs')).data
+        async created () {
+            await this.loadData()
+            this.$loaded()
+        },
+        methods: {
+            async loadData () {
+                this.resubs = (await this.$http.get('/resubs')).data
+            }
         }
     }
 </script>
