@@ -84,12 +84,12 @@
 
                 try {
                     if(this.post_id == null) {
-                        const post = (await this.$http.post(`/resubs/${this.resubname}/posts`, data)).data
-                        await this.$router.push(`/resubs/${this.resubname}/posts/${post.id}`)
+                        const post = (await this.$http.post(`/resubs/${this.resubname}/posts/`, data)).data
+                        await this.$router.push(`/resubs/${this.resubname}/posts/${post.id}/`)
                     }
                     else {
-                        await this.$http.patch(`/posts/${this.post_id}`, data).data
-                        await this.$router.push(`/resubs/${this.resubname}/posts/${this.post_id}`)
+                        await this.$http.patch(`/posts/${this.post_id}/`, data).data
+                        await this.$router.push(`/resubs/${this.resubname}/posts/${this.post_id}/`)
                     }
                 }
                 catch (error) {

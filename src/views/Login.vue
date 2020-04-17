@@ -23,16 +23,20 @@
 
     export default {
         name: "Login",
-        data() {
+        data () {
             return {
                 username: '',
                 password: '',
                 errored: false
             }
         },
+        created () {
+            this.$loaded()
+        },
         methods: {
-            async login(e) {
+            async login (e) {
                 e.preventDefault();
+                this.$load()
 
                 const data = qs.stringify({
                     grant_type: 'password',
@@ -53,6 +57,7 @@
                 }
                 catch (error) {
                     this.errored = true;
+                    this.$loaded()
                 }
             }
         }

@@ -7,21 +7,15 @@
         </div>
 
         <div class="topnav" id="topnav">
-            <router-link to="/resubs">
-                <a>Resubs</a>
-            </router-link>
-            <router-link to="/support">
-                <a>Support</a>
-            </router-link>
+            <div class="left">
+                <router-link to="/resubs" class="nav-button">Resubs</router-link>
+                <router-link to="/support" class="nav-button">Support</router-link>
+            </div>
 
-            <div class="right">
-                <router-link v-if="user === null" to="/login">
-                    <a>Login</a>
-                </router-link>
-                <router-link v-bind:to="`/users/${user.username}`" v-else>
-                    <a>{{ user.username }}</a>
-                </router-link>
-                <select v-model="selectedApiUrl" @change="changeApiUrl">
+            <div class="right" id="login">
+                <router-link :to="`/users/${user.username}`" v-if="user" class="nav-button">{{ user.username }}</router-link>
+                <router-link to="/login" v-else-if="loaded" class="nav-button">Login</router-link>
+                <select v-model="selectedApiUrl" @change="changeApiUrl" class="nav-button">
                     <option v-for="api in apis" :key="api.name" :value="api.url">
                         {{ api.name }}
                     </option>
@@ -33,26 +27,32 @@
 
 <script>
     import api from '@/api'
+    import 'nprogress/nprogress.js'
+    import 'nprogress/nprogress.css'
 
     export default {
         name: "Navbar",
-        data: function () {
+        data () {
             return {
                 user: null,
                 apis: api.apis,
-                selectedApiUrl: localStorage.apiUrl
+                selectedApiUrl: localStorage.apiUrl,
+                loaded: false
             }
         },
-        async created() {
-            // Only attempt to load the current user if token is not stored
-            if (!localStorage.userToken) {
-                return
-            }
-
-            this.user = (await this.$http.get('/users/me')).data
+        async created () {
+            await this.loadData()
+            this.loaded = true
         },
         methods: {
-            changeApiUrl() {
+            async loadData () {
+                if (!localStorage.userToken) {
+                    return
+                }
+
+                this.user = (await this.$http.get('/users/me')).data
+            },
+            changeApiUrl () {
                 localStorage.apiUrl = this.selectedApiUrl
                 this.$router.go(0)
             }
@@ -97,36 +97,30 @@
     }
 
     /* Style the links inside the navigation bar */
-    .topnav a {
-        float: left;
+    .nav-button {
+        display: inline-block;
+        padding: 24px 12px;
         color: #45b1ff;
-        padding: 6px 16px;
-        text-decoration: none;
+        font-family: Consolas, monaco, monospace;
         font-size: 17px;
         font-weight: bold;
         transition: 0.2s;
     }
 
-    .topnav a:hover {
+    .nav-button:hover {
         color: #ffffff;
+    }
+
+    .topnav a {
+        text-decoration: none;
     }
 
     .topnav select {
-        position: absolute;
-        color: #45b1ff;
         background: none;
         border: none;
-        font-size: 17px;
-        font-weight: bold;
-        transition: 0.2s;
         cursor: pointer;
-        font-family: Consolas, monaco, monospace;
-        right: 0;
-        bottom: 0;
-    }
-
-    .topnav select:hover {
-        color: #ffffff;
+        padding-right: 0;
+        margin-right: 12px;
     }
 
     .topnav select option {
@@ -134,7 +128,11 @@
         font-size: 17px;
     }
 
-    .right {
+    .topnav .left {
+        float: left;
+    }
+
+    .topnav .right {
         float: right;
     }
 </style>

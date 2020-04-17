@@ -16,7 +16,7 @@
                     <div class="resub-info-top">
                         <span class="resub-title">Resub: {{ resub.name }}</span><br>
                         Owner
-                        <router-link v-bind:to="`/users/${resub.owner_username}`" class="resub-owner">
+                        <router-link :to="`/users/${resub.owner_username}`" class="resub-owner">
                             <a>{{ resub.owner_username }}</a>
                         </router-link>
                         - Total Posts <span class="resub-posts-count">{{ posts.length }}</span>
@@ -29,7 +29,7 @@
             </div>
         </div>
 
-        <div v-else class="no-resub">
+        <div v-else-if="loaded" class="no-resub">
             <div class="no-resub-title">Resub not found!</div>
             <div class="no-resub-desc">We were not able to load the resub. Have you inputted the url correctly?</div>
         </div>
@@ -50,28 +50,34 @@
                 required: true
             }
         },
-        data: function() {
+        data () {
             return {
                 posts: [],
                 resub: null,
-                user: null
+                user: null,
+                loaded: false
             }
         },
-        async created() {
-            try {
-                this.resub = (await this.$http.get(`/resubs/${this.resubname}`)).data
-            }
-            catch (error) {
-                return;
-            }
+        async created () {
+            await this.loadData()
+            this.loaded = this.$loaded()
+        },
+        methods: {
+            async loadData () {
+                try {
+                    this.resub = (await this.$http.get(`/resubs/${this.resubname}/`)).data
+                } catch (error) {
+                    return;
+                }
 
-            this.posts = (await this.$http.get(`/resubs/${this.resub.name}/posts`)).data
+                this.posts = (await this.$http.get(`/resubs/${this.resub.name}/posts/`)).data
 
-            if (!localStorage.userToken) {
-                return
+                if (!localStorage.userToken) {
+                    return
+                }
+
+                this.user = (await this.$http.get('/users/me/')).data
             }
-
-            this.user = (await this.$http.get('/users/me')).data
         }
     }
 </script>
