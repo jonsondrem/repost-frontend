@@ -12,7 +12,7 @@
                     <br>
                     <span class="post-info-title">{{ post.title }}</span>
                 </div>
-                <div class="post-info-right" v-bind:style="getVoteColor">
+                <div class="post-info-right" v-bind:style="getVoteColor(post.votes)">
                     <span class="post-info-votes">{{ post.votes }}</span>
                 </div>
             </div>
