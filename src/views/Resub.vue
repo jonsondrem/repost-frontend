@@ -1,6 +1,13 @@
 <template>
     <div class="resub-page">
         <Navbar></Navbar>
+
+        <div v-if="resub != null && user != null" class="create-post">
+            <router-link :to="{ name: 'PostForm', params: { resub_name: resub.name } }">
+                <a>Create Post</a>
+            </router-link>
+        </div>
+
         <div v-if="resub != null">
             <div id="post-data" class="post-data">
                 <PostList :posts="posts"/>
@@ -47,6 +54,7 @@
             return {
                 posts: [],
                 resub: null,
+                user: null,
                 loaded: false
             }
         },
@@ -58,18 +66,42 @@
             async loadData () {
                 try {
                     this.resub = (await this.$http.get(`/resubs/${this.resubname}/`)).data
-                }
-                catch (error) {
+                } catch (error) {
                     return;
                 }
 
                 this.posts = (await this.$http.get(`/resubs/${this.resub.name}/posts/`)).data
+
+                if (!localStorage.userToken) {
+                    return
+                }
+
+                this.user = (await this.$http.get('/users/me/')).data
             }
         }
     }
 </script>
 
 <style scoped>
+
+    .create-post {
+        position: absolute;
+        top: 175px;
+        left: 50%;
+        transform: translate(-50%);
+    }
+
+    .create-post a {
+        font-weight: bold;
+        font-size: 17px;
+        text-decoration: none;
+        color: #45b1ff;
+        transition: 0.2s;
+    }
+
+    .create-post a:hover {
+        color: white;
+    }
 
     .post-circle img {
         position: absolute;
