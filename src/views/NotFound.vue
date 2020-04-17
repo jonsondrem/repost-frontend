@@ -16,7 +16,10 @@
 
 <script>
     export default {
-        name: "404"
+        name: "NotFound",
+        created () {
+            this.$loaded()
+        }
     }
 </script>
 
