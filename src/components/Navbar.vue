@@ -112,9 +112,7 @@
     }
 
     .topnav select {
-        position: relative;
-        margin-top: 12px;
-        padding: 14px 16px;
+        position: absolute;
         color: #45b1ff;
         background: none;
         border: none;
@@ -122,6 +120,9 @@
         font-weight: bold;
         transition: 0.2s;
         cursor: pointer;
+        font-family: Consolas, monaco, monospace;
+        right: 0;
+        bottom: 0;
     }
 
     .topnav select:hover {
