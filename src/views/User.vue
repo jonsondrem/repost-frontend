@@ -72,8 +72,10 @@
                 return;
             }
 
-            this.resubs = (await this.$http.get(`/users/${this.user.username}/resubs`)).data
-            this.posts = (await this.$http.get(`/users/${this.user.username}/posts`)).data
+            await Promise.all([
+                this.$http.get(`/users/${this.user.username}/resubs`).then(response => this.resubs = response.data),
+                this.$http.get(`/users/${this.user.username}/posts`).then(response => this.posts = response.data)
+            ])
         }
     }
 </script>

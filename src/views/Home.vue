@@ -47,11 +47,9 @@
         async created() {
             const resubs = (await this.$http.get('/resubs')).data
 
-            // Load all posts from every resub
-            for (const resub of resubs) {
-                const resubPosts = (await this.$http.get(`/resubs/${resub.name}/posts`)).data
-                this.posts.push(...resubPosts)
-            }
+            // Load all posts from every resub concurrently
+            await Promise.all(resubs.map(resub =>
+                this.$http.get(`/resubs/${resub.name}/posts`).then(response => this.posts.push(...response.data))))
 
             // Find and set the top post
             this.topPost = this.posts.reduce((a, b) => a.votes > b.votes ? a : b)
