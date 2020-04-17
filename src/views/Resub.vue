@@ -7,7 +7,7 @@
 
                 <div class="resub-info">
                     <div class="resub-info-top">
-                        <span class="resub-title">Resub: {{ resub.name }}</span>
+                        <span class="resub-title">Resub: {{ resub.name }}</span><br>
                         Owner
                         <router-link v-bind:to="`/users/${resub.owner_username}`" class="resub-owner">
                             <a>{{ resub.owner_username }}</a>

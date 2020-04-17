@@ -100,8 +100,7 @@
     .topnav a {
         float: left;
         color: #45b1ff;
-        text-align: center;
-        padding: 14px 16px;
+        padding: 6px 16px;
         text-decoration: none;
         font-size: 17px;
         font-weight: bold;
