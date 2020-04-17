@@ -3,7 +3,9 @@
         <Navbar></Navbar>
 
         <div v-if="resub != null && user != null" class="create-post">
-            <router-link to="/createp"></router-link>
+            <router-link :to="{ name: 'CreatePost', params: { user, resub} }">
+                <a>Create Post</a>
+            </router-link>
         </div>
 
         <div v-if="resub != null">
@@ -75,6 +77,25 @@
 </script>
 
 <style scoped>
+
+    .create-post {
+        position: absolute;
+        top: 175px;
+        left: 50%;
+        transform: translate(-50%);
+    }
+
+    .create-post a {
+        font-weight: bold;
+        font-size: 17px;
+        text-decoration: none;
+        color: #45b1ff;
+        transition: 0.2s;
+    }
+
+    .create-post a:hover {
+        color: white;
+    }
 
     .post-circle img {
         position: absolute;
