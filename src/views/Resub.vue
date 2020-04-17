@@ -57,13 +57,13 @@
         methods: {
             async loadData () {
                 try {
-                    this.resub = (await this.$http.get(`/resubs/${this.resubname}`)).data
+                    this.resub = (await this.$http.get(`/resubs/${this.resubname}/`)).data
                 }
                 catch (error) {
                     return;
                 }
 
-                this.posts = (await this.$http.get(`/resubs/${this.resub.name}/posts`)).data
+                this.posts = (await this.$http.get(`/resubs/${this.resub.name}/posts/`)).data
             }
         }
     }

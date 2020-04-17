@@ -65,7 +65,7 @@
         methods: {
             async loadData () {
                 try {
-                    this.post = (await this.$http.get(`/posts/${this.post_id}`)).data
+                    this.post = (await this.$http.get(`/posts/${this.post_id}/`)).data
                 } catch (error) {
                     return
                 }
@@ -76,7 +76,7 @@
                 }
 
                 try {
-                    this.user = (await this.$http.get(`/users/${this.post.author_username}`)).data
+                    this.user = (await this.$http.get(`/users/${this.post.author_username}/`)).data
                 } catch (error) {
                     // Ignore and leave this.user as null
                 }

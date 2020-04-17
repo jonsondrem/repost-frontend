@@ -73,14 +73,14 @@
         methods: {
             async loadData () {
                 try {
-                    this.user = (await this.$http.get(`/users/${this.username}`)).data
+                    this.user = (await this.$http.get(`/users/${this.username}/`)).data
                 } catch (error) {
                     return;
                 }
 
                 await Promise.all([
-                    this.$http.get(`/users/${this.user.username}/resubs`).then(response => this.resubs = response.data),
-                    this.$http.get(`/users/${this.user.username}/posts`).then(response => this.posts = response.data)
+                    this.$http.get(`/users/${this.user.username}/resubs/`).then(response => this.resubs = response.data),
+                    this.$http.get(`/users/${this.user.username}/posts/`).then(response => this.posts = response.data)
                 ])
             }
         }

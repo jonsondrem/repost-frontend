@@ -13,6 +13,7 @@
             <router-link to="/support">
                 <a>Support</a>
             </router-link>
+
             <div class="login" id="login">
                 <router-link :to="`/users/${user.username}`" v-if="user">
                     <a>{{ user.username }}</a>
@@ -20,12 +21,18 @@
                 <router-link to="/login" v-else-if="loaded">
                     <a>Login</a>
                 </router-link>
+                <select v-model="selectedApiUrl" @change="changeApiUrl">
+                    <option v-for="api in apis" :key="api.name" :value="api.url">
+                        {{ api.name }}
+                    </option>
+                </select>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+    import api from '@/api'
     import 'nprogress/nprogress.js'
     import 'nprogress/nprogress.css'
 
@@ -34,6 +41,8 @@
         data () {
             return {
                 user: null,
+                apis: api.apis,
+                selectedApiUrl: localStorage.apiUrl,
                 loaded: false
             }
         },
@@ -48,6 +57,10 @@
                 }
 
                 this.user = (await this.$http.get('/users/me')).data
+            },
+            changeApiUrl () {
+                localStorage.apiUrl = this.selectedApiUrl
+                this.$router.go(0)
             }
         }
     }
@@ -104,7 +117,30 @@
         color: #ffffff;
     }
 
-    .login {
+    .topnav select {
+        position: absolute;
+        color: #45b1ff;
+        background: none;
+        border: none;
+        font-size: 17px;
+        font-weight: bold;
+        transition: 0.2s;
+        cursor: pointer;
+        font-family: Consolas, monaco, monospace;
+        right: 0;
+        bottom: 0;
+    }
+
+    .topnav select:hover {
+        color: #ffffff;
+    }
+
+    .topnav select option {
+        background-color: black;
+        font-size: 17px;
+    }
+
+    .right {
         float: right;
     }
 </style>

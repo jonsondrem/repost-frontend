@@ -5,7 +5,7 @@ import api from '@/api'
 import NProgress from 'nprogress'
 
 Vue.config.productionTip = false
-Vue.prototype.$http = api
+Vue.prototype.$http = api.instance
 
 Vue.prototype.$load = NProgress.start
 Vue.prototype.$loaded = () => {

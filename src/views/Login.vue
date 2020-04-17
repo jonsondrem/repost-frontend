@@ -1,5 +1,5 @@
 <template>
-    <div class="login">
+    <div class="right">
         <div class="circle">
             <router-link to="/">
                 <img src="../assets/Logo.png" alt="logo">
@@ -39,12 +39,19 @@
                 this.$load()
 
                 const data = qs.stringify({
+                    grant_type: 'password',
                     username: this.username,
-                    password: this.password
+                    password: this.password,
+                    scope: 'user'
                 });
 
                 try {
-                    const oauth_token = (await this.$http.post('/auth/token', data)).data
+                    const oauth_token = (await this.$http.post('/auth/token', data, {
+                        auth: {
+                            username: 'client',
+                            password: 'secret'
+                        }
+                    })).data
                     localStorage.userToken = oauth_token.access_token
                     await this.$router.push('/')
                 }
@@ -58,7 +65,7 @@
 </script>
 
 <style scoped>
-    .login {
+    .right {
         position: absolute;
         background-color: #2e2e2e;
         width: 250px;
