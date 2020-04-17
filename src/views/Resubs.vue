@@ -28,7 +28,7 @@
             }
         },
         async created() {
-            this.resubs = (await this.$http.get('/resubs')).data
+            this.resubs = (await this.$http.get('/resubs/')).data
         }
     }
 </script>
