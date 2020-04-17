@@ -13,24 +13,34 @@
             <router-link to="/support">
                 <a>Support</a>
             </router-link>
-            <div class="login" id="login">
+
+            <div class="right">
                 <router-link v-if="user === null" to="/login">
                     <a>Login</a>
                 </router-link>
                 <router-link v-bind:to="`/users/${user.username}`" v-else>
                     <a>{{ user.username }}</a>
                 </router-link>
+                <select v-model="selectedApiUrl" @change="changeApiUrl">
+                    <option v-for="api in apis" :key="api.name" :value="api.url">
+                        {{ api.name }}
+                    </option>
+                </select>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+    import api from '@/api'
+
     export default {
         name: "Navbar",
         data: function () {
             return {
-                user: null
+                user: null,
+                apis: api.apis,
+                selectedApiUrl: localStorage.apiUrl
             }
         },
         async created() {
@@ -40,6 +50,12 @@
             }
 
             this.user = (await this.$http.get('/users/me')).data
+        },
+        methods: {
+            changeApiUrl() {
+                localStorage.apiUrl = this.selectedApiUrl
+                this.$router.go(0)
+            }
         }
     }
 </script>
@@ -95,7 +111,30 @@
         color: #ffffff;
     }
 
-    .login {
+    .topnav select {
+        position: absolute;
+        color: #45b1ff;
+        background: none;
+        border: none;
+        font-size: 17px;
+        font-weight: bold;
+        transition: 0.2s;
+        cursor: pointer;
+        font-family: Consolas, monaco, monospace;
+        right: 0;
+        bottom: 0;
+    }
+
+    .topnav select:hover {
+        color: #ffffff;
+    }
+
+    .topnav select option {
+        background-color: black;
+        font-size: 17px;
+    }
+
+    .right {
         float: right;
     }
 </style>
