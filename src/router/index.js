@@ -6,6 +6,7 @@ import Home from "@/views/Home";
 import Resub from "@/views/Resub";
 import Resubs from "@/views/Resubs";
 import Post from "@/views/Post";
+import NotFound from "@/views/NotFound"
 
 Vue.use(VueRouter);
 
@@ -17,7 +18,8 @@ const routes = [
     {path: '/resubs', component: Resubs},
     {path: '/resubs/:resubname/posts', component: Resub, props: true},
     {path: '/resubs/:resubname', redirect: '/resubs/:resubname/posts', component: Resub, props: true},
-    {path: '/resubs/:resubname/posts/:post_id', component: Post, props: true}
+    {path: '/resubs/:resubname/posts/:post_id', component: Post, props: true},
+    {path: '*', component: NotFound}
 ];
 
 const router = new VueRouter( {

@@ -141,6 +141,10 @@
         padding-bottom: 32px;
     }
 
+    a {
+        text-decoration: none;
+    }
+
     .link {
         color: #45b1ff;
         text-decoration: none;
