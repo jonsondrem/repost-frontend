@@ -4,7 +4,7 @@ import router from '@/router'
 import api from '@/api'
 
 Vue.config.productionTip = false
-Vue.prototype.$http = api
+Vue.prototype.$http = api.instance
 
 new Vue({
     router,

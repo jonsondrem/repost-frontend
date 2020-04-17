@@ -67,13 +67,13 @@
         },
         async created() {
             try {
-                this.user = (await this.$http.get(`/users/${this.username}`)).data
+                this.user = (await this.$http.get(`/users/${this.username}/`)).data
             } catch (error) {
                 return;
             }
 
-            this.resubs = (await this.$http.get(`/users/${this.user.username}/resubs`)).data
-            this.posts = (await this.$http.get(`/users/${this.user.username}/posts`)).data
+            this.resubs = (await this.$http.get(`/users/${this.user.username}/resubs/`)).data
+            this.posts = (await this.$http.get(`/users/${this.user.username}/posts/`)).data
         }
     }
 </script>

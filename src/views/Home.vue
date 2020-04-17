@@ -45,11 +45,11 @@
             }
         },
         async created() {
-            const resubs = (await this.$http.get('/resubs')).data
+            const resubs = (await this.$http.get('/resubs/')).data
 
             // Load all posts from every resub
             for (const resub of resubs) {
-                const resubPosts = (await this.$http.get(`/resubs/${resub.name}/posts`)).data
+                const resubPosts = (await this.$http.get(`/resubs/${resub.name}/posts/`)).data
                 this.posts.push(...resubPosts)
             }
 
