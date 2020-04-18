@@ -63,6 +63,12 @@
                 errormsg: ''
             }
         },
+        created () {
+            this.dTitle = this.title;
+            this.dPic_url = this.pic_url;
+            this.dContent = this.content;
+            this.$loaded()
+        },
         methods: {
             async submitPost() {
                 if(this.dTitle.length == 0) {
@@ -97,11 +103,6 @@
                 }
 
             }
-        },
-        created() {
-            this.dTitle = this.title;
-            this.dPic_url = this.pic_url;
-            this.dContent = this.content;
         }
     }
 </script>

@@ -2,13 +2,13 @@
     <div class="resub-page">
         <Navbar></Navbar>
 
-        <div v-if="resub != null && user != null" class="create-post">
-            <router-link :to="{ name: 'PostForm', params: { resub_name: resub.name } }">
-                <a>Create Post</a>
-            </router-link>
-        </div>
+        <div v-if="resub">
+            <div v-if="state.currentUser" class="create-post">
+                <router-link :to="{ name: 'PostForm', params: { resub_name: resub.name } }">
+                    <a>Create Post</a>
+                </router-link>
+            </div>
 
-        <div v-if="resub != null">
             <div id="post-data" class="post-data">
                 <PostList :posts="posts"/>
 
@@ -52,9 +52,9 @@
         },
         data () {
             return {
+                state: this.$store.state,
                 posts: [],
                 resub: null,
-                user: null,
                 loaded: false
             }
         },
@@ -71,12 +71,6 @@
                 }
 
                 this.posts = (await this.$http.get(`/resubs/${this.resub.name}/posts/`)).data
-
-                if (!localStorage.userToken) {
-                    return
-                }
-
-                this.user = (await this.$http.get('/users/me/')).data
             }
         }
     }
