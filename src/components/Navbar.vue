@@ -41,19 +41,13 @@
             }
         },
         async created () {
-            await this.loadData()
+            this.user = await this.$store.getCurrentUser()
             this.loaded = true
         },
         methods: {
-            async loadData () {
-                if (!localStorage.userToken) {
-                    return
-                }
-
-                this.user = (await this.$http.get('/users/me')).data
-            },
             changeApiUrl () {
                 localStorage.apiUrl = this.selectedApiUrl
+                this.$store.resetState()
                 this.$router.go(0)
             }
         }

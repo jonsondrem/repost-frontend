@@ -56,7 +56,7 @@
                             password: 'secret'
                         }
                     })).data
-                    localStorage.userToken = oauth_token.access_token
+                    this.$store.state.userToken = oauth_token.access_token
                     await this.$router.push(this.from)
                 }
                 catch (error) {

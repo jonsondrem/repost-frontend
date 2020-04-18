@@ -3,15 +3,15 @@
         <Navbar></Navbar>
         <div v-if="post" class="post">
             <div class="circle">
-                <div v-if="user && user.avatar_url != null">
-                    <img :src="user.avatar_url" alt="Profile Picture">
+                <div v-if="author && author.avatar_url != null">
+                    <img :src="author.avatar_url" alt="Profile Picture">
                 </div>
                 <div v-else-if="loaded">No Avatar</div>
             </div>
             <div class="author">Author:
-                <span v-if="user != null">
-                    <router-link :to="`/users/${user.username}`">
-                        <a>{{ user.username }}</a>
+                <span v-if="author != null">
+                    <router-link :to="`/users/${author.username}`">
+                        <a>{{ author.username }}</a>
                     </router-link>
                 </span>
                 <span v-else-if="loaded">unknown</span>
@@ -21,8 +21,8 @@
                 <a>{{ post.parent_resub_name }}</a>
             </router-link></div>
 
-            <div v-if="current_user && user">
-                <div v-if="user.username === current_user.username" class="edit-delete">
+            <div v-if="state.currentUser && author">
+                <div v-if="author.username === state.currentUser.username" class="edit-delete">
                     <router-link :to="{name: 'PostForm',
                         params: { resubname: post.parent_resub_name,
                             post_id: post_id,
@@ -68,9 +68,9 @@
         },
         data () {
             return {
+                state: this.$store.state,
                 post: null,
-                user: null,
-                current_user: null,
+                author: null,
                 loaded: false
             }
         },
@@ -92,8 +92,7 @@
                 }
 
                 try {
-                    this.user = (await this.$http.get(`/users/${this.post.author_username}/`)).data
-                    this.current_user = (await this.$http.get('/users/me')).data
+                    this.author = (await this.$http.get(`/users/${this.post.author_username}/`)).data
                 } catch (error) {
                     // Ignore and leave this.user as null
                 }
@@ -103,7 +102,7 @@
                    await this.$http.delete(`/posts/${this.post_id}`)
                    await this.$router.push(`/resubs/${this.post.parent_resub_name}/posts/`)
                 } catch (error) {
-                    //
+                    // TODO: handle delete error
                 }
             }
         }
