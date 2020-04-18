@@ -67,11 +67,11 @@
                         <span v-else-if="loaded">unknown</span>
                     </div>
 
-                    <div>
+                    <div v-if="state.currentUser">
                         <div class="comment-edit-delete">
-                            <span @click="showEditPopup" class="edit-comment">Edit</span>
-                            -
-                            <span @click="deleteComment" class="delete">Delete</span>
+                            <span v-if="state.currentUser.username === comment.author_username" @click="showEditPopup(comment)" class="edit-comment">Edit</span>
+                            <span v-if="state.currentUser.username === comment.author_username"> - </span>
+                            <span @click="deleteComment(comment)" class="delete" v-if="state.currentUser.username === comment.author_username || state.currentUser.username === author.username">Delete</span>
                         </div>
                     </div>
 
@@ -84,7 +84,7 @@
                     </div>
                 </div>
             </div>
-            <div class="comments" v-else>
+            <div class="comments" v-else-if="loaded">
                 <div class="comment-header">No Comments yet!</div>
             </div>
         </div>
@@ -94,10 +94,10 @@
             <div class="no-post-desc">We were not able to load the post. Have you inputted the url correctly?</div>
         </div>
 
-        <div class="form-popup" :style="{display: form}">
+        <div class="form-popup" :style="{display: form}" v-if="edited_comment">
             <button @click="closePopup"></button>
-            <textarea></textarea>
-            <button @click="editComment">Edit comment</button>
+            <textarea v-model="edited_comment.content"></textarea>
+            <button @click="editComment()">Edit comment</button>
         </div>
     </div>
 </template>
@@ -130,6 +130,7 @@
                 comments: [],
                 replies: [],
                 comment_content: '',
+                edited_comment: null,
                 form: 'none'
             }
         },
@@ -192,10 +193,24 @@
                 }
             },
             async editComment() {
-                console.log('comment edited')
+                const data = {
+                    content: this.edited_comment.content
+                }
+
+                try {
+                    await this.$http.patch(`/comments/${this.edited_comment.id}/`, data)
+                    await this.$router.go(0)
+                } catch (error) {
+                    //TODO send feedback to user
+                }
             },
-            async deleteComment() {
-                console.log('comment deleted logic')
+            async deleteComment(comment) {
+                try {
+                    await this.$http.delete(`/comments/${comment.id}/`)
+                    await this.$router.go(0)
+                } catch (error) {
+                    //TODO send feedback to user
+                }
             },
             getVoteColor (vote) {
                 if (vote > 0) {
@@ -205,8 +220,9 @@
                 }
                 return 'color: #ffffff';
             },
-            showEditPopup() {
+            showEditPopup(comment) {
                 this.form = 'block'
+                this.edited_comment = comment
             },
             closePopup() {
                 this.form = 'none'
@@ -303,11 +319,15 @@
         text-decoration: underline;
     }
 
-    .edit-delete span {
+    .delete a:hover {
+        text-decoration: underline;
+    }
+
+    .delete {
         color: #ff0000;
     }
 
-    .edit-delete span:hover {
+    .delete:hover {
         text-decoration: underline;
         cursor: pointer;
     }
@@ -468,27 +488,13 @@
         font-size: 12px;
     }
 
-    .comment-edit-delete a {
-        text-decoration: none;
+    .edit-comment {
         color: white;
-        margin-bottom: 2px;
-    }
-
-    .comment-edit-delete a:hover {
-        text-decoration: underline;
-    }
-
-    .comment-edit-delete span {
-        color: #ff0000;
-    }
-
-    .comment-edit-delete .edit-comment {
-        color: white;
-    }
-
-    .comment-edit-delete span:hover {
-        text-decoration: underline;
         cursor: pointer;
+    }
+
+    .edit-comment:hover {
+        text-decoration: underline;
     }
 
     .comment-info {
