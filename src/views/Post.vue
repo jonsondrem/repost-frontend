@@ -1,43 +1,91 @@
 <template>
     <div class="post-info">
         <Navbar></Navbar>
-        <div v-if="post" class="post">
-            <div class="circle">
-                <div v-if="user && user.avatar_url != null">
-                    <img :src="user.avatar_url" alt="Profile Picture">
+        <div v-if="post" class="view">
+            <div class="post">
+                <div class="circle">
+                    <div v-if="user && user.avatar_url != null">
+                        <img :src="user.avatar_url" alt="Profile Picture">
+                    </div>
+                    <div v-else-if="loaded">No Avatar</div>
                 </div>
-                <div v-else-if="loaded">No Avatar</div>
-            </div>
-            <div class="author">Author:
-                <span v-if="user != null">
+                <div class="author">Author:
+                    <span v-if="user != null">
                     <router-link :to="`/users/${user.username}`">
                         <a>{{ user.username }}</a>
                     </router-link>
                 </span>
-                <span v-else-if="loaded">unknown</span>
-            </div>
+                    <span v-else-if="loaded">unknown</span>
+                </div>
 
-            <div class="resub">- Resub: <router-link :to="`/resubs/${post.parent_resub_name}/posts/`">
-                <a>{{ post.parent_resub_name }}</a>
-            </router-link></div>
+                <div class="resub">- Resub:
+                    <router-link :to="`/resubs/${post.parent_resub_name}/posts/`">
+                        <a>{{ post.parent_resub_name }}</a>
+                    </router-link>
+                </div>
 
-            <div v-if="current_user && user">
-                <div v-if="user.username === current_user.username" class="edit-delete">
-                    <router-link :to="{name: 'PostForm',
+                <div v-if="current_user && user">
+                    <div v-if="user.username === current_user.username" class="edit-delete">
+                        <router-link :to="{name: 'PostForm',
                         params: { resubname: post.parent_resub_name,
                             post_id: post_id,
                             title: post.title,
                             pic_url: post.url,
                             content: post.content } }">
-                        <a>Edit</a>
-                    </router-link> -
-                    <span @click="deletePost" class="delete">Delete</span>
+                            <a>Edit</a>
+                        </router-link>
+                        -
+                        <span @click="deletePost" class="delete">Delete</span>
+                    </div>
                 </div>
+
+                <div class="info">
+                    <div class="section-header">{{ post.title }}</div>
+                    <div class="content">{{ post.content }}</div>
+                </div>
+
+                <div class="comment-input-header">Comment:</div>
+                <div class="comment-input">
+                    <textarea placeholder="Enter your comment here..." v-model="comment_content"></textarea>
+                    <button @click="submitComment">Submit Comment</button>
+                </div>
+                <div class="empty-space"></div>
             </div>
 
-            <div class="info">
-                <div class="section-header">{{ post.title }}</div>
-                <div class="content">{{ post.content }}</div>
+            <div class="comments" v-if="comments.length > 0">
+                <div class="comment-header">Comments</div>
+                <div class="comment" v-for="comment in comments" :key="comment.id">
+                    <div class="comment-circle">
+                        <div>N/A</div>
+                    </div>
+                    <div class="comment-author">From:
+                        <span v-if="comment.author_username != null">
+                    <router-link :to="`/users/${comment.author_username}`">
+                        <a>{{ comment.author_username }}</a>
+                    </router-link>
+                </span>
+                        <span v-else-if="loaded">unknown</span>
+                    </div>
+
+                    <div>
+                        <div class="comment-edit-delete">
+                            <span @click="showEditPopup" class="edit-comment">Edit</span>
+                            -
+                            <span @click="deleteComment" class="delete">Delete</span>
+                        </div>
+                    </div>
+
+                    <div class="comment-info">
+                        <div class="comment-content">{{ comment.content }}</div>
+                    </div>
+
+                    <div v-if="comment.replies.length > 0" class="replies">
+                        <Reply :replies="comment.replies" :dashes="''"></Reply>
+                    </div>
+                </div>
+            </div>
+            <div class="comments" v-else>
+                <div class="comment-header">No Comments yet!</div>
             </div>
         </div>
 
@@ -45,15 +93,22 @@
             <div class="no-post-title">Post not found!</div>
             <div class="no-post-desc">We were not able to load the post. Have you inputted the url correctly?</div>
         </div>
+
+        <div class="form-popup" :style="{display: form}">
+            <button @click="closePopup"></button>
+            <textarea></textarea>
+            <button @click="editComment">Edit comment</button>
+        </div>
     </div>
 </template>
 
 <script>
     import Navbar from '@/components/Navbar';
+    import Reply from '@/components/Reply';
 
     export default {
         name: "Post",
-        components: {Navbar},
+        components: {Navbar, Reply},
         props: {
             post_id: {
                 type: String,
@@ -71,7 +126,11 @@
                 post: null,
                 user: null,
                 current_user: null,
-                loaded: false
+                loaded: false,
+                comments: [],
+                replies: [],
+                comment_content: '',
+                form: 'none'
             }
         },
         async created () {
@@ -97,6 +156,21 @@
                 } catch (error) {
                     // Ignore and leave this.user as null
                 }
+
+                const commentList = (await this.$http.get(`/posts/${this.post_id}/comments/`)).data
+                for(const comment of commentList) {
+                    comment.replies = []
+                    for(const reply of commentList) {
+                        if(comment.id === reply.parent_comment_id) {
+                            comment.replies.push(reply)
+                        }
+                    }
+                    if(!comment.parent_comment_id) {
+                        this.comments.push(comment)
+                    } else {
+                        this.replies.push(comment)
+                    }
+                }
             },
             async deletePost() {
                 try {
@@ -105,18 +179,56 @@
                 } catch (error) {
                     //
                 }
+            },
+            async submitComment() {
+                const data = {
+                    content: this.comment_content
+                }
+
+                try {
+                    await this.$http.post(`/posts/${this.post_id}/comments/`, data)
+                    await this.$router.go(0)
+                } catch (error) {
+                    //TODO send feedback to user
+                }
+            },
+            async editComment() {
+                console.log('comment edited')
+            },
+            async deleteComment() {
+                console.log('comment deleted logic')
+            },
+            getVoteColor (vote) {
+                if (vote > 0) {
+                    return 'color: #00ff73';
+                } else if (vote < 0) {
+                    return 'color: #ff0000';
+                }
+                return 'color: #ffffff';
+            },
+            showEditPopup() {
+                this.form = 'block'
+            },
+            closePopup() {
+                this.form = 'none'
             }
         }
     }
 </script>
 
 <style scoped>
-    .post {
+    .view {
         position: absolute;
-        background-color: #2e2e2e;
-        width: 50%;
-        left: 50%;
         top: 200px;
+        transform: translate(-50%, 0);
+        left: 50%;
+    }
+
+    .post {
+        position: relative;
+        background-color: #2e2e2e;
+        width: 1000px;
+        left: 50%;
         transform: translate(-50%, 0);
         color: white;
         border-radius: 65px 0 0 0;
@@ -205,6 +317,10 @@
         clear: both;
         padding-left: 3%;
         padding-top: 10px;
+        border-bottom: 3px;
+        border-style: dashed;
+        border-color: #242424;
+        margin-bottom: 32px;
     }
 
     .section-header {
@@ -239,5 +355,184 @@
         padding-top: 16px;
         padding-bottom: 12px;
         font-size: 12px;
+    }
+
+    hr {
+        width: 94%;
+    }
+
+    .comment-input-header {
+        position: relative;
+        left: 3%;
+        margin-bottom: 6px;
+    }
+
+    .comment-input {
+        position: relative;
+        width: 47%;
+        left: 3%;
+    }
+
+    .comment-input textarea{
+        width: 70%;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        display: inline-block;
+        height: 100px;
+        min-height: 50px;
+        border: none;
+        border-radius: 4px 0 0 4px;
+    }
+
+    .comment-input button {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        position: absolute;
+        width: 30%;
+        height: 100%;
+        border: none;
+        background-color: #242424;
+        color: #45b1ff;
+        font-family: Consolas, monaco, monospace;
+        border-radius: 0 4px 4px 0;
+        transition: 0.2s;
+    }
+
+    .comment-input button:hover {
+        color: white;
+    }
+
+    .empty-space {
+        height: 12px;
+    }
+
+    .comments {
+        position: relative;
+    }
+
+    .comment-header {
+        color: #45b1ff;
+        font-size: 17px;
+        text-align: center;
+        margin-top: 12px;
+    }
+
+    .comment {
+        background-color: #2e2e2e;
+        width: 100%;
+        color: white;
+        border-radius: 20px 0 0 0;
+        margin-top: 12px;
+    }
+
+    .comment-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #242424;
+        float: left;
+    }
+
+    .comment-circle div {
+        position: relative;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    .comment-circle img {
+        max-width: 85%;
+        max-height: 85%;
+        border-radius: 50%;
+    }
+
+    .comment-author {
+        padding-left: 6px;
+        font-size: 12px;
+        float: left;
+    }
+
+    .comment-author a {
+        color: #00ff73;
+        text-decoration: none;
+    }
+
+    .comment-author a:hover {
+        text-decoration: underline;
+    }
+
+    .comment-edit-delete {
+        float: right;
+        font-size: 12px;
+    }
+
+    .comment-edit-delete a {
+        text-decoration: none;
+        color: white;
+        margin-bottom: 2px;
+    }
+
+    .comment-edit-delete a:hover {
+        text-decoration: underline;
+    }
+
+    .comment-edit-delete span {
+        color: #ff0000;
+    }
+
+    .comment-edit-delete .edit-comment {
+        color: white;
+    }
+
+    .comment-edit-delete span:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .comment-info {
+        clear: both;
+        padding-left: 2px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .comment-info hr {
+        width: 100%;
+    }
+
+    .comment-content {
+        font-size: 12px;
+    }
+
+    .replies {
+        border-top: 3px;
+        border-style: dashed;
+        border-color: #242424;
+        font-size: 12px;
+        padding-bottom: 6px;
+        padding-top: 6px;
+    }
+
+    .replies a {
+        color: #00ff73;
+        text-decoration: none;
+    }
+
+    .replies a:hover {
+        text-decoration: underline;
+    }
+
+    .form-popup {
+        position: fixed;
+        width: 250px;
+        height: 250px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        transition: 0.2s;
+        background-color: #242424;
     }
 </style>
