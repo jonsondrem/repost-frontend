@@ -27,8 +27,12 @@
             return {
                 username: '',
                 password: '',
-                errored: false
+                errored: false,
+                from: null
             }
+        },
+        beforeRouteEnter (to, from, next) {
+            next(vm => vm.from = from.path)
         },
         created () {
             this.$loaded()
@@ -53,7 +57,7 @@
                         }
                     })).data
                     this.$store.state.userToken = oauth_token.access_token
-                    await this.$router.push('/')
+                    await this.$router.push(this.from)
                 }
                 catch (error) {
                     this.errored = true;
