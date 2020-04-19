@@ -73,8 +73,7 @@
                 }
                 catch (error) {
                     this.$loaded()
-                    this.error = `${error.response.status} ${error.response.statusText}<br>` +
-                        'Something went wrong while submitting info to server. Check your connection.'
+                    this.error = error
                 }
 
             }

@@ -1,19 +1,28 @@
 <template>
     <div class="section">
-        <div class="create-post">
+        <div class="form-panel">
             <div class="header">
                 <div><slot name="header"></slot></div>
             </div>
             <slot></slot>
         </div>
-        <div v-show="error" class="error" v-html="error"></div>
+        <div v-show="error" class="error">{{ formatError() }}</div>
     </div>
 </template>
 
 <script>
     export default {
         name: "FormPage",
-        props: ['error']
+        props: ['error'],
+        methods: {
+            formatError () {
+                if (this.error.response) {
+                    return `Failed with response: ${this.error.response.status} ${this.error.response.statusText}`
+                }
+
+                return 'Something went wrong while submitting info to server. Check your connection.'
+            }
+        }
     }
 </script>
 
@@ -25,7 +34,7 @@
         width: 30%;
     }
 
-    .create-post {
+    .form-panel {
         border-radius: 25px 25px 0 0;
         background-color: #2e2e2e;
     }

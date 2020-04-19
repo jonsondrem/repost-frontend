@@ -3,7 +3,7 @@
         <Navbar></Navbar>
 
         <div v-if="resub">
-            <div v-if="state.currentUser" class="create-post">
+            <div v-if="state.currentUser" class="form-panel">
                 <router-link :to="{ name: 'PostForm', params: { resub_name: resub.name } }">
                     <a>Create Post</a>
                 </router-link>
@@ -78,14 +78,14 @@
 
 <style scoped>
 
-    .create-post {
+    .form-panel {
         position: absolute;
         top: 175px;
         left: 50%;
         transform: translate(-50%);
     }
 
-    .create-post a {
+    .form-panel a {
         font-weight: bold;
         font-size: 17px;
         text-decoration: none;
@@ -93,7 +93,7 @@
         transition: 0.2s;
     }
 
-    .create-post a:hover {
+    .form-panel a:hover {
         color: white;
     }
 
