@@ -3,13 +3,13 @@
         <Navbar></Navbar>
         <div v-if="post" class="post">
             <div class="circle">
-                <div v-if="author && author.avatar_url != null">
+                <div v-if="author && author.avatar_url">
                     <img :src="author.avatar_url" alt="Profile Picture">
                 </div>
                 <div v-else-if="loaded">No Avatar</div>
             </div>
             <div class="author">Author:
-                <span v-if="author != null">
+                <span v-if="author">
                     <router-link :to="`/users/${author.username}`">
                         <a>{{ author.username }}</a>
                     </router-link>
@@ -21,14 +21,12 @@
                 <a>{{ post.parent_resub_name }}</a>
             </router-link></div>
 
-            <div v-if="state.currentUser && author">
-                <div v-if="author.username === state.currentUser.username" class="edit-delete">
-                    <router-link :to="{name: 'PostForm',
-                        params: { resubname: post.parent_resub_name, post: post} }">
-                        <a>Edit</a>
-                    </router-link> -
-                    <span @click="deletePost" class="delete">Delete</span>
-                </div>
+            <div v-if="isAuthor" class="edit-delete">
+                <router-link :to="{name: 'PostForm',
+                    params: { resubname: post.parent_resub_name, post: post} }">
+                    <a>Edit</a>
+                </router-link> -
+                <span @click="deletePost" class="delete">Delete</span>
             </div>
 
             <div class="info">
@@ -73,6 +71,11 @@
         async created () {
             await this.loadData()
             this.loaded = this.$loaded()
+        },
+        computed: {
+            isAuthor () {
+                return this.state.currentUser?.username === this.author?.username
+            }
         },
         methods: {
             async loadData() {

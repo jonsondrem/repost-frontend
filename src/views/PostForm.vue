@@ -48,7 +48,7 @@
         },
         computed: {
             isNew () {
-                return this.post.id != null
+                return this.post.id == null
             }
         },
         created () {
@@ -64,13 +64,13 @@
                 }
 
                 if (this.isNew) {
-                    this.post = (await this.$http.post(`/resubs/${this.resubname}/posts/`, data)).data
+                    this.localPost = (await this.$http.post(`/resubs/${this.resubname}/posts/`, data)).data
                 }
                 else {
                     await this.$http.patch(`/posts/${this.localPost.id}/`, data)
                 }
 
-                await this.$router.push(`/resubs/${this.resubname}/posts/${this.post.id}`)
+                await this.$router.push(`/resubs/${this.resubname}/posts/${this.localPost.id}`)
             }
         }
     }
