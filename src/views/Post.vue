@@ -21,13 +21,7 @@
                 <a>{{ post.parent_resub_name }}</a>
             </router-link></div>
 
-            <div v-if="isAuthor" class="edit-delete">
-                <router-link :to="{name: 'EditPost',
-                    params: { resubname: post.parent_resub_name, post_id: post.id.toString(), post: post} }">
-                    <a>Edit</a>
-                </router-link> -
-                <span @click="deletePost" class="delete">Delete</span>
-            </div>
+            <EditAndDelete v-if="isAuthor" :delete-action="deletePost" :edit-route="editRoute"/>
 
             <div class="info">
                 <div class="section-header">{{ post.title }}</div>
@@ -35,19 +29,20 @@
             </div>
         </div>
 
-        <div v-else-if="loaded" class="no-post">
-            <div class="no-post-title">Post not found!</div>
-            <div class="no-post-desc">We were not able to load the post. Have you inputted the url correctly?</div>
-        </div>
+        <Notice v-else-if="loaded" title="Post not found!">
+            We were not able to load the post. Have you inputted the url correctly?
+        </Notice>
     </div>
 </template>
 
 <script>
     import Navbar from '@/components/Navbar';
+    import Notice from "@/components/Notice";
+    import EditAndDelete from "@/components/EditAndDelete";
 
     export default {
         name: "Post",
-        components: {Navbar},
+        components: {EditAndDelete, Notice, Navbar},
         props: {
             post_id: {
                 type: String,
@@ -75,6 +70,16 @@
         computed: {
             isAuthor () {
                 return this.state.currentUser?.username === this.author?.username
+            },
+            editRoute () {
+                return {
+                    name: 'editPost',
+                    params: {
+                        resubname: this.post.parent_resub_name,
+                        post_id: this.post.id.toString(),
+                        post: this.post
+                    }
+                }
             }
         },
         methods: {
@@ -175,30 +180,6 @@
         text-decoration: underline;
     }
 
-    .edit-delete {
-        float: right;
-        font-size: 12px;
-    }
-
-    .edit-delete a {
-        text-decoration: none;
-        color: white;
-        margin-bottom: 2px;
-    }
-
-    .edit-delete a:hover {
-        text-decoration: underline;
-    }
-
-    .edit-delete span {
-        color: #ff0000;
-    }
-
-    .edit-delete span:hover {
-        text-decoration: underline;
-        cursor: pointer;
-    }
-
     .info {
         clear: both;
         padding-left: 3%;
@@ -216,26 +197,4 @@
         padding-bottom: 32px;
     }
 
-    .no-post {
-        position: absolute;
-        background-color: #2e2e2e;
-        width: 40%;
-        left: 50%;
-        top: 200px;
-        transform: translate(-50%, 50%);
-        color: white;
-    }
-
-    .no-post-title {
-        font-size: 22px;
-        font-weight: bold;
-        text-align: center;
-    }
-
-    .no-post-desc {
-        text-align: center;
-        padding-top: 16px;
-        padding-bottom: 12px;
-        font-size: 12px;
-    }
 </style>

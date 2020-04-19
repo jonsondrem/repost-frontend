@@ -25,7 +25,7 @@
                 <input id="new-owner" type="text" v-model="new_owner_username">
             </template>
 
-            <input class="button" type="submit" :value="(isNew ? 'Create' : 'Edit') + ' Resub'">
+            <input type="submit" :value="(isNew ? 'Create' : 'Edit') + ' Resub'">
         </FormPage>
     </div>
 </template>

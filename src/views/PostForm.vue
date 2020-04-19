@@ -14,7 +14,7 @@
             <textarea id="content" v-model="localPost.content" required></textarea>
             <label for="url">URL</label>
             <input id="url" type="text" v-model="localPost.url">
-            <input class="button" type="submit" :value="(isNew ? 'Create' : 'Edit') + ' Post'">
+            <input type="submit" :value="(isNew ? 'Create' : 'Edit') + ' Post'">
         </FormPage>
     </div>
 </template>

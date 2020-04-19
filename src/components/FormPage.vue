@@ -59,6 +59,10 @@
                 catch (error) {
                     this.$loaded()
                     this.localError = error
+
+                    if (!error.response) {
+                        throw error
+                    }
                 }
             }
         }
@@ -99,7 +103,7 @@
         padding-left: 4%;
     }
 
-    label, input[type=text], textarea {
+    label, input[type=text], input[type=password], textarea {
         display: block;
     }
 
@@ -108,7 +112,7 @@
         padding-bottom: 12px;
     }
 
-    input[type=text] {
+    input[type=text], input[type=password] {
         margin-bottom: 24px;
         width: 92%;
         border-radius: 2px;
