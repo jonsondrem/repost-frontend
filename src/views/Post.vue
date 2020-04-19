@@ -24,11 +24,7 @@
             <div v-if="state.currentUser && author">
                 <div v-if="author.username === state.currentUser.username" class="edit-delete">
                     <router-link :to="{name: 'PostForm',
-                        params: { resubname: post.parent_resub_name,
-                            post_id: post_id,
-                            title: post.title,
-                            pic_url: post.url,
-                            content: post.content } }">
+                        params: { resubname: post.parent_resub_name, post: post} }">
                         <a>Edit</a>
                     </router-link> -
                     <span @click="deletePost" class="delete">Delete</span>
