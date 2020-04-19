@@ -4,13 +4,13 @@
         <div v-if="post" class="view">
             <div class="post">
                 <div class="circle">
-                    <div v-if="author && author.avatar_url != null">
+                    <div v-if="author && author.avatar_url">
                         <img :src="author.avatar_url" alt="Profile Picture">
                     </div>
                     <div v-else-if="loaded">No Avatar</div>
                 </div>
                 <div class="author">Author:
-                    <span v-if="author != null">
+                    <span v-if="author">
                     <router-link :to="`/users/${author.username}`">
                         <a>{{ author.username }}</a>
                     </router-link>
@@ -24,20 +24,13 @@
                     </router-link>
                 </div>
 
-            <div v-if="state.currentUser && author">
-                <div v-if="author.username === state.currentUser.username" class="edit-delete">
-                    <router-link :to="{name: 'PostForm',
-                        params: { resubname: post.parent_resub_name,
-                            post_id: post_id,
-                            title: post.title,
-                            pic_url: post.url,
-                            content: post.content } }">
-                            <a>Edit</a>
-                        </router-link>
-                        -
-                        <span @click="deletePost" class="delete">Delete</span>
-                    </div>
-                </div>
+            <div v-if="isAuthor" class="edit-delete">
+                <router-link :to="{name: 'EditPost',
+                    params: { resubname: post.parent_resub_name, post_id: post.id.toString(), post: post} }">
+                    <a>Edit</a>
+                </router-link> -
+                <span @click="deletePost" class="delete">Delete</span>
+            </div>
 
                 <div class="info">
                     <div class="section-header">{{ post.title }}</div>
@@ -137,6 +130,11 @@
         async created () {
             await this.loadData()
             this.loaded = this.$loaded()
+        },
+        computed: {
+            isAuthor () {
+                return this.state.currentUser?.username === this.author?.username
+            }
         },
         methods: {
             async loadData() {
