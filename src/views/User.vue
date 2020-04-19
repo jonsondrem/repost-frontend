@@ -2,6 +2,7 @@
     <div class="user-info">
         <Navbar></Navbar>
         <div v-if="user" class="user">
+            <EditAndDelete v-if="state.currentUser" :delete-action="deleteUser" :edit-route="'/me/edit'"/>
             <div class="circle">
                 <div v-if="user.avatar_url">
                     <img :src="user.avatar_url" alt="Profile Picture">
@@ -48,10 +49,11 @@
 <script>
     import Navbar from '@/components/Navbar';
     import Notice from "@/components/Notice";
+    import EditAndDelete from "@/components/EditAndDelete";
 
     export default {
         name: "User",
-        components: {Notice, Navbar},
+        components: {EditAndDelete, Notice, Navbar},
         props: {
             username: {
                 type: String,
@@ -61,6 +63,7 @@
         },
         data () {
             return {
+                state: this.$store.state,
                 user: null,
                 resubs: [],
                 posts: [],
@@ -83,6 +86,11 @@
                     this.$http.get(`/users/${this.user.username}/resubs/`).then(response => this.resubs = response.data),
                     this.$http.get(`/users/${this.user.username}/posts/`).then(response => this.posts = response.data)
                 ])
+            },
+            async deleteUser () {
+                await this.$http.delete('/users/me')
+                this.$store.logout()
+                await this.$router.push('/')
             }
         }
     }
