@@ -22,8 +22,8 @@
             </router-link></div>
 
             <div v-if="isAuthor" class="edit-delete">
-                <router-link :to="{name: 'PostForm',
-                    params: { resubname: post.parent_resub_name, post: post} }">
+                <router-link :to="{name: 'EditPost',
+                    params: { resubname: post.parent_resub_name, post_id: post.id.toString(), post: post} }">
                     <a>Edit</a>
                 </router-link> -
                 <span @click="deletePost" class="delete">Delete</span>

@@ -4,7 +4,7 @@
 
         <div v-if="resub">
             <div v-if="state.currentUser" class="form-panel">
-                <router-link :to="{ name: 'PostForm', params: { resub_name: resub.name } }">
+                <router-link :to="`/resubs/${resub.name}/posts/create`">
                     <a>Create Post</a>
                 </router-link>
             </div>

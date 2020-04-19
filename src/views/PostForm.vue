@@ -39,6 +39,10 @@
                         id: null
                     }
                 }
+            },
+            post_id: {
+                type: String,
+                required: false
             }
         },
         data () {
@@ -48,11 +52,17 @@
         },
         computed: {
             isNew () {
-                return this.post.id == null
+                return !this.post_id || this.post.id == null
             }
         },
-        created () {
-            Object.assign(this.localPost, this.post)
+        async created () {
+            if (!this.post.id && this.post_id) {
+                this.localPost = (await this.$http.get(`/posts/${this.post_id}/`)).data
+            }
+            else {
+                Object.assign(this.localPost, this.post)
+            }
+
             this.$loaded()
         },
         methods: {

@@ -23,8 +23,9 @@ const routes = [
     {path: '/resubs/:resubname/posts', component: Resub, props: true},
     {path: '/resubs/:resubname', redirect: '/resubs/:resubname/posts', component: Resub, props: true},
     {path: '/resubs/:resubname/edit', component: ResubForm, props: true, name: 'EditResub'},
+    {path: '/resubs/:resubname/posts/create', component: PostForm, props: true},
     {path: '/resubs/:resubname/posts/:post_id', component: Post, props: true},
-    {path: '/resubs/:resubname/post', component: PostForm, props: true, name: 'PostForm'},
+    {path: '/resubs/:resubname/posts/:post_id/edit', component: PostForm, props: true, name: 'EditPost'},
     {path: '*', component: NotFound}
 ];
 
