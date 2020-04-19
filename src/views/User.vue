@@ -39,18 +39,19 @@
             </div>
         </div>
 
-        <div v-else-if="loaded" class="no-user">
-            <div class="no-user-title">User not found!</div>
-            <div class="no-user-desc">We were not able to load the user. Have you inputted the url correctly?</div>
-        </div>
+        <Notice v-else-if="loaded" title="User not found!">
+            We were not able to load the user. Have you inputted the url correctly?
+        </Notice>
     </div>
 </template>
 
 <script>
     import Navbar from '@/components/Navbar';
+    import Notice from "@/components/Notice";
+
     export default {
         name: "User",
-        components: {Navbar},
+        components: {Notice, Navbar},
         props: {
             username: {
                 type: String,
@@ -163,26 +164,4 @@
         text-decoration: underline;
     }
 
-    .no-user {
-        position: absolute;
-        background-color: #2e2e2e;
-        width: 40%;
-        left: 50%;
-        top: 200px;
-        transform: translate(-50%, 50%);
-        color: white;
-    }
-
-    .no-user-title {
-        font-size: 22px;
-        font-weight: bold;
-        text-align: center;
-    }
-
-    .no-user-desc {
-        text-align: center;
-        padding-top: 16px;
-        padding-bottom: 12px;
-        font-size: 12px;
-    }
 </style>
