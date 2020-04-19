@@ -59,6 +59,10 @@
                 catch (error) {
                     this.$loaded()
                     this.localError = error
+
+                    if (!error.response) {
+                        throw error
+                    }
                 }
             }
         }
