@@ -57,18 +57,20 @@
                 new_owner_username: null
             }
         },
-        async created () {
-            if (this.isNew && this.resubname) {
-                this.resub = (await this.$http.get(`/resubs/${this.resubname}/`)).data
-            }
-
-            Object.assign(this.localResub, this.resub)
-            this.$loaded()
-        },
         computed: {
             isNew () {
-                return !this.resub.name
+                return !this.resubname || !this.resub.name
             }
+        },
+        async created () {
+            if (!this.resub.name && this.resubname) {
+                this.localResub = (await this.$http.get(`/resubs/${this.resubname}/`)).data
+            }
+            else {
+                Object.assign(this.localResub, this.resub)
+            }
+
+            this.$loaded()
         },
         methods: {
             async submitResub () {
