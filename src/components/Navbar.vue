@@ -46,7 +46,7 @@
         },
         methods: {
             changeApiUrl () {
-                this.$store.resetState()
+                this.$store.logout()
                 this.$store.state.apiUrl = this.selectedApiUrl
                 this.$router.go(0)
             }
