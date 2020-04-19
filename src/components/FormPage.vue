@@ -4,23 +4,43 @@
             <div class="header">
                 <div><slot name="header"></slot></div>
             </div>
-            <slot></slot>
+            <form class="form" @submit="handleSubmit">
+                <slot></slot>
+            </form>
         </div>
-        <div v-show="error" class="error">{{ formatError() }}</div>
+        <div v-show="error" class="error" v-html="error"></div>
     </div>
 </template>
 
 <script>
     export default {
         name: "FormPage",
-        props: ['error'],
+        props: {
+            submit: {
+                type: Function,
+                required: true
+            },
+            error: {
+                type: String,
+                default: ''
+            }
+        },
         methods: {
-            formatError () {
-                if (this.error.response) {
-                    return `Failed with response: ${this.error.response.status} ${this.error.response.statusText}`
-                }
+            async handleSubmit (e) {
+                e.preventDefault()
+                this.$load()
 
-                return 'Something went wrong while submitting info to server. Check your connection.'
+                try {
+                    await this.submit()
+                }
+                catch (error) {
+                    this.$loaded()
+                    if (this.error.response) {
+                        return `Failed with response: ${this.error.response.status} ${this.error.response.statusText}`
+                    }
+
+                    return 'Something went wrong while submitting info to server. Check your connection.'
+                }
             }
         }
     }
@@ -55,7 +75,7 @@
         text-align: center;
     }
 
-    form {
+    .form {
         color: white;
         padding-left: 4%;
     }

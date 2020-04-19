@@ -1,21 +1,20 @@
 <template>
     <div>
         <Navbar></Navbar>
-        <FormPage :error="error">
+        <FormPage :submit="submitPost">
             <template v-slot:header>
-                <span class="create-edit" v-if="post.id == null">Create</span>
+                <span v-if="post.id == null">Create</span>
                 <span v-else>Edit</span>
                 post in resub: <span class="resub-name">{{ resubname }}</span>
             </template>
-            <form class="form" @submit="submitPost">
-                <label for="title">Title*</label>
-                <input id="title" type="text" v-model="post.title" required>
-                <label for="content">Content*</label>
-                <textarea id="content" v-model="post.content" required></textarea>
-                <label for="url">URL</label>
-                <input id="url" type="text" v-model="post.url">
-                <input class="button" type="submit" :value="(post.id == null ? 'Create' : 'Edit') + ' Post'">
-            </form>
+
+            <label for="title">Title*</label>
+            <input id="title" type="text" v-model="post.title" required>
+            <label for="content">Content*</label>
+            <textarea id="content" v-model="post.content" required></textarea>
+            <label for="url">URL</label>
+            <input id="url" type="text" v-model="post.url">
+            <input class="button" type="submit" :value="(post.id == null ? 'Create' : 'Edit') + ' Post'">
         </FormPage>
     </div>
 </template>
@@ -42,40 +41,25 @@
                 }
             }
         },
-        data() {
-            return {
-                error: ''
-            }
-        },
         created () {
             this.$loaded()
         },
         methods: {
-            async submitPost (e) {
-                e.preventDefault()
-                this.$load()
-
+            async submitPost () {
                 const data = {
                     title: this.post.title || null,
                     content: this.post.content || null,
                     url: this.post.url || null,
                 }
 
-                try {
-                    if(this.post.id == null) {
-                        const post = (await this.$http.post(`/resubs/${this.resubname}/posts/`, data)).data
-                        await this.$router.push(`/resubs/${this.resubname}/posts/${post.id}`)
-                    }
-                    else {
-                        await this.$http.patch(`/posts/${this.post.id}/`, data)
-                        await this.$router.push(`/resubs/${this.resubname}/posts/${this.post.id}`)
-                    }
+                if (this.post.id == null) {
+                    const post = (await this.$http.post(`/resubs/${this.resubname}/posts/`, data)).data
+                    await this.$router.push(`/resubs/${this.resubname}/posts/${post.id}`)
                 }
-                catch (error) {
-                    this.$loaded()
-                    this.error = error
+                else {
+                    await this.$http.patch(`/posts/${this.post.id}/`, data)
+                    await this.$router.push(`/resubs/${this.resubname}/posts/${this.post.id}`)
                 }
-
             }
         }
     }
