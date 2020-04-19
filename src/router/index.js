@@ -8,6 +8,7 @@ import Resubs from "@/views/Resubs";
 import Post from "@/views/Post";
 import NotFound from "@/views/NotFound"
 import PostForm from "@/views/PostForm";
+import ResubForm from "@/views/ResubForm";
 import NProgress from 'nprogress'
 
 Vue.use(VueRouter);
@@ -18,8 +19,10 @@ const routes = [
     {path: '/login', component: Login},
     {path: '/users/:username', component: User, props: true},
     {path: '/resubs', component: Resubs},
+    {path: '/resubs/create', component: ResubForm},
     {path: '/resubs/:resubname/posts', component: Resub, props: true},
     {path: '/resubs/:resubname', redirect: '/resubs/:resubname/posts', component: Resub, props: true},
+    {path: '/resubs/:resubname/edit', component: ResubForm, props: true, name: 'EditResub'},
     {path: '/resubs/:resubname/posts/:post_id', component: Post, props: true},
     {path: '/resubs/:resubname/post', component: PostForm, props: true, name: 'PostForm'},
     {path: '*', component: NotFound}
