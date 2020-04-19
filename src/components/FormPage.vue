@@ -8,7 +8,7 @@
                 <slot></slot>
             </form>
         </div>
-        <div v-show="error" class="error" v-html="error"></div>
+        <div v-show="isError" class="error" v-html="formatError"></div>
     </div>
 </template>
 
@@ -25,6 +25,29 @@
                 default: ''
             }
         },
+        data () {
+            return {
+                localError: ''
+            }
+        },
+        computed: {
+            isError () {
+                return this.error || this.localError
+            },
+            formatError () {
+                if (this.error) {
+                    return this.error
+                }
+
+                // If the server responded, either just show the error detail or the status code if no detail exists
+                if (this.localError.response) {
+                    return this.localError.response.data?.detail ||
+                        `Failed with response: ${this.localError.response.status} ${this.localError.response.statusText}`
+                }
+
+                return 'Something went wrong while submitting info to server. Check your connection.'
+            }
+        },
         methods: {
             async handleSubmit (e) {
                 e.preventDefault()
@@ -35,11 +58,7 @@
                 }
                 catch (error) {
                     this.$loaded()
-                    if (this.error.response) {
-                        return `Failed with response: ${this.error.response.status} ${this.error.response.statusText}`
-                    }
-
-                    return 'Something went wrong while submitting info to server. Check your connection.'
+                    this.localError = error
                 }
             }
         }
