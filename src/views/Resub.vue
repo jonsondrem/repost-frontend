@@ -3,8 +3,8 @@
         <Navbar></Navbar>
 
         <div v-if="resub">
-            <div v-if="state.currentUser" class="create-post">
-                <router-link :to="{ name: 'PostForm', params: { resub_name: resub.name } }">
+            <div v-if="state.currentUser" class="form-panel">
+                <router-link :to="`/resubs/${resub.name}/posts/create`">
                     <a>Create Post</a>
                 </router-link>
             </div>
@@ -13,8 +13,16 @@
                 <PostList :posts="posts"/>
 
                 <div class="resub-info">
+
                     <div class="resub-info-top">
-                        <span class="resub-title">Resub: {{ resub.name }}</span><br>
+                        <div v-if="isOwner" class="edit-delete">
+                            <router-link :to="{name: 'EditResub',
+                                params: { resubname: resub.name, resub: resub} }">
+                                <a>Edit</a>
+                            </router-link> -
+                            <span @click="deleteResub" class="delete">Delete</span>
+                        </div>
+                        <div class="resub-title">Resub: {{ resub.name }}</div>
                         Owner
                         <router-link :to="`/users/${resub.owner_username}`" class="resub-owner">
                             <a>{{ resub.owner_username }}</a>
@@ -58,6 +66,11 @@
                 loaded: false
             }
         },
+        computed: {
+            isOwner () {
+                return this.state.currentUser?.username === this.resub?.owner_username
+            }
+        },
         async created () {
             await this.loadData()
             this.loaded = this.$loaded()
@@ -71,6 +84,15 @@
                 }
 
                 this.posts = (await this.$http.get(`/resubs/${this.resub.name}/posts/`)).data
+            },
+            async deleteResub() {
+                try {
+                   await this.$http.delete(`/resubs/${this.resub.name}/`)
+                } catch (error) {
+                    // TODO: handle delete error
+                }
+
+                await this.$router.push('/')
             }
         }
     }
@@ -78,14 +100,38 @@
 
 <style scoped>
 
-    .create-post {
+     .edit-delete {
+        text-align: right;
+        font-size: 12px;
+    }
+
+    .edit-delete a {
+        text-decoration: none;
+        color: white;
+        margin-bottom: 2px;
+    }
+
+    .edit-delete a:hover {
+        text-decoration: underline;
+    }
+
+    .edit-delete span {
+        color: #ff0000;
+    }
+
+    .edit-delete span:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .form-panel {
         position: absolute;
         top: 175px;
         left: 50%;
         transform: translate(-50%);
     }
 
-    .create-post a {
+    .form-panel a {
         font-weight: bold;
         font-size: 17px;
         text-decoration: none;
@@ -93,7 +139,7 @@
         transition: 0.2s;
     }
 
-    .create-post a:hover {
+    .form-panel a:hover {
         color: white;
     }
 

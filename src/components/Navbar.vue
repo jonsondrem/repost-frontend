@@ -46,8 +46,8 @@
         },
         methods: {
             changeApiUrl () {
-                localStorage.apiUrl = this.selectedApiUrl
                 this.$store.resetState()
+                this.$store.state.apiUrl = this.selectedApiUrl
                 this.$router.go(0)
             }
         }
