@@ -50,16 +50,12 @@
                     grant_type: 'password',
                     username: this.username,
                     password: this.password,
+                    client_id: process.env.REPOST_CLIENT_ID || 'repost',
                     scope: 'user'
                 });
 
                 try {
-                    const oauth_token = (await this.$http.post('/auth/token', data, {
-                        auth: {
-                            username: 'client',
-                            password: 'secret'
-                        }
-                    })).data
+                    const oauth_token = (await this.$http.post('/auth/token', data)).data
                     this.$store.state.userToken = oauth_token.access_token
                     await this.$router.push(this.from)
                 }
