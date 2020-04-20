@@ -2,6 +2,7 @@
     <div class="user-info">
         <Navbar></Navbar>
         <div v-if="user" class="user">
+            <EditAndDelete v-if="state.currentUser" :delete-action="deleteUser" :edit-route="'/me/edit'"/>
             <div class="circle">
                 <div v-if="user.avatar_url">
                     <img :src="user.avatar_url" alt="Profile Picture">
@@ -39,18 +40,20 @@
             </div>
         </div>
 
-        <div v-else-if="loaded" class="no-user">
-            <div class="no-user-title">User not found!</div>
-            <div class="no-user-desc">We were not able to load the user. Have you inputted the url correctly?</div>
-        </div>
+        <Notice v-else-if="loaded" title="User not found!">
+            We were not able to load the user. Have you inputted the url correctly?
+        </Notice>
     </div>
 </template>
 
 <script>
     import Navbar from '@/components/Navbar';
+    import Notice from "@/components/Notice";
+    import EditAndDelete from "@/components/EditAndDelete";
+
     export default {
         name: "User",
-        components: {Navbar},
+        components: {EditAndDelete, Notice, Navbar},
         props: {
             username: {
                 type: String,
@@ -60,6 +63,7 @@
         },
         data () {
             return {
+                state: this.$store.state,
                 user: null,
                 resubs: [],
                 posts: [],
@@ -82,6 +86,11 @@
                     this.$http.get(`/users/${this.user.username}/resubs/`).then(response => this.resubs = response.data),
                     this.$http.get(`/users/${this.user.username}/posts/`).then(response => this.posts = response.data)
                 ])
+            },
+            async deleteUser () {
+                await this.$http.delete('/users/me')
+                this.$store.logout()
+                await this.$router.push('/')
             }
         }
     }
@@ -163,26 +172,4 @@
         text-decoration: underline;
     }
 
-    .no-user {
-        position: absolute;
-        background-color: #2e2e2e;
-        width: 40%;
-        left: 50%;
-        top: 200px;
-        transform: translate(-50%, 50%);
-        color: white;
-    }
-
-    .no-user-title {
-        font-size: 22px;
-        font-weight: bold;
-        text-align: center;
-    }
-
-    .no-user-desc {
-        text-align: center;
-        padding-top: 16px;
-        padding-bottom: 12px;
-        font-size: 12px;
-    }
 </style>

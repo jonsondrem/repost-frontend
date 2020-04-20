@@ -14,7 +14,10 @@
 
             <div class="right" id="login">
                 <router-link :to="`/users/${user.username}`" v-if="user" class="nav-button">{{ user.username }}</router-link>
-                <router-link to="/login" v-else-if="loaded" class="nav-button">Login</router-link>
+                <template v-else-if="loaded">
+                    <router-link to="/login" class="nav-button">Login</router-link>
+                    <router-link to="/signup" class="nav-button">Sign Up</router-link>
+                </template>
                 <select v-model="selectedApiUrl" @change="changeApiUrl" class="nav-button">
                     <option v-for="api in apis" :key="api.name" :value="api.url">
                         {{ api.name }}
@@ -46,8 +49,8 @@
         },
         methods: {
             changeApiUrl () {
-                localStorage.apiUrl = this.selectedApiUrl
-                this.$store.resetState()
+                this.$store.logout()
+                this.$store.state.apiUrl = this.selectedApiUrl
                 this.$router.go(0)
             }
         }

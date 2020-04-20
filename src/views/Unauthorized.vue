@@ -1,10 +1,15 @@
 <template>
     <div class="section">
         <div class="title">
-            404
+            Unauthorized
         </div>
         <div class="info">
-            The directory you tried to access doesn't exist.
+            <template v-if="!state.currentUser">
+                You must be logged in to interact with this resource
+            </template>
+            <template v-else>
+                You are not authorized to interact with this resource
+            </template>
         </div>
         <div class="return">
             Return to <router-link to="/"><a>Home</a></router-link>
@@ -14,7 +19,12 @@
 
 <script>
     export default {
-        name: "NotFound",
+        name: "Unauthorized",
+        data () {
+            return {
+                state: this.$store.state
+            }
+        },
         created () {
             this.$loaded()
         }

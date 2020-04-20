@@ -3,8 +3,8 @@
         <Navbar></Navbar>
 
         <div v-if="resub">
-            <div v-if="state.currentUser" class="create-post">
-                <router-link :to="{ name: 'PostForm', params: { resub_name: resub.name } }">
+            <div v-if="state.currentUser" class="form-panel">
+                <router-link :to="`/resubs/${resub.name}/posts/create`">
                     <a>Create Post</a>
                 </router-link>
             </div>
@@ -13,8 +13,11 @@
                 <PostList :posts="posts"/>
 
                 <div class="resub-info">
+
                     <div class="resub-info-top">
-                        <span class="resub-title">Resub: {{ resub.name }}</span><br>
+                        <EditAndDelete v-if="isOwner" :delete-action="deleteResub" :edit-route="editRoute"/>
+
+                        <div class="resub-title">Resub: {{ resub.name }}</div>
                         Owner
                         <router-link :to="`/users/${resub.owner_username}`" class="resub-owner">
                             <a>{{ resub.owner_username }}</a>
@@ -29,20 +32,21 @@
             </div>
         </div>
 
-        <div v-else-if="loaded" class="no-resub">
-            <div class="no-resub-title">Resub not found!</div>
-            <div class="no-resub-desc">We were not able to load the resub. Have you inputted the url correctly?</div>
-        </div>
+        <Notice v-else-if="loaded" title="Resub not found!">
+            We were not able to load the resub. Have you inputted the url correctly?
+        </Notice>
     </div>
 </template>
 
 <script>
     import Navbar from '@/components/Navbar';
     import PostList from '@/components/PostList';
+    import Notice from "@/components/Notice";
+    import EditAndDelete from "@/components/EditAndDelete";
 
     export default {
         name: "Resub",
-        components: {Navbar, PostList},
+        components: {EditAndDelete, Notice, Navbar, PostList},
         props: {
             resubname: {
                 type: String,
@@ -58,6 +62,20 @@
                 loaded: false
             }
         },
+        computed: {
+            isOwner () {
+                return this.state.currentUser?.username === this.resub?.owner_username
+            },
+            editRoute() {
+                return {
+                    name: 'editResub',
+                    params: {
+                        resubname: this.resub.name,
+                        resub: this.resub
+                    }
+                }
+            }
+        },
         async created () {
             await this.loadData()
             this.loaded = this.$loaded()
@@ -71,6 +89,15 @@
                 }
 
                 this.posts = (await this.$http.get(`/resubs/${this.resub.name}/posts/`)).data
+            },
+            async deleteResub() {
+                try {
+                   await this.$http.delete(`/resubs/${this.resub.name}/`)
+                } catch (error) {
+                    // TODO: handle delete error
+                }
+
+                await this.$router.push('/')
             }
         }
     }
@@ -78,14 +105,14 @@
 
 <style scoped>
 
-    .create-post {
+    .form-panel {
         position: absolute;
         top: 175px;
         left: 50%;
         transform: translate(-50%);
     }
 
-    .create-post a {
+    .form-panel a {
         font-weight: bold;
         font-size: 17px;
         text-decoration: none;
@@ -93,7 +120,7 @@
         transition: 0.2s;
     }
 
-    .create-post a:hover {
+    .form-panel a:hover {
         color: white;
     }
 
@@ -178,26 +205,4 @@
         padding-right: 3%;
     }
 
-    .no-resub {
-        position: absolute;
-        background-color: #2e2e2e;
-        width: 40%;
-        left: 50%;
-        top: 200px;
-        transform: translate(-50%, 50%);
-        color: white;
-    }
-
-    .no-resub-title {
-        font-size: 22px;
-        font-weight: bold;
-        text-align: center;
-    }
-
-    .no-resub-desc {
-        text-align: center;
-        padding-top: 16px;
-        padding-bottom: 12px;
-        font-size: 12px;
-    }
 </style>

@@ -4,13 +4,13 @@
         <div v-if="post" class="view">
             <div class="post">
                 <div class="circle">
-                    <div v-if="author && author.avatar_url != null">
+                    <div v-if="author && author.avatar_url">
                         <img :src="author.avatar_url" alt="Profile Picture">
                     </div>
                     <div v-else-if="loaded">No Avatar</div>
                 </div>
                 <div class="author">Author:
-                    <span v-if="author != null">
+                    <span v-if="author">
                     <router-link :to="`/users/${author.username}`">
                         <a>{{ author.username }}</a>
                     </router-link>
@@ -24,20 +24,7 @@
                     </router-link>
                 </div>
 
-            <div v-if="state.currentUser && author">
-                <div v-if="author.username === state.currentUser.username" class="edit-delete">
-                    <router-link :to="{name: 'PostForm',
-                        params: { resubname: post.parent_resub_name,
-                            post_id: post_id,
-                            title: post.title,
-                            pic_url: post.url,
-                            content: post.content } }">
-                            <a>Edit</a>
-                        </router-link>
-                        -
-                        <span @click="deletePost" class="delete">Delete</span>
-                    </div>
-                </div>
+                <EditAndDelete v-if="isAuthor" :delete-action="deletePost" :edit-route="editRoute"/>
 
                 <div class="info">
                     <div class="section-header">{{ post.title }}</div>
@@ -89,10 +76,9 @@
             </div>
         </div>
 
-        <div v-else-if="loaded" class="no-post">
-            <div class="no-post-title">Post not found!</div>
-            <div class="no-post-desc">We were not able to load the post. Have you inputted the url correctly?</div>
-        </div>
+        <Notice v-else-if="loaded" title="Post not found!">
+            We were not able to load the post. Have you inputted the url correctly?
+        </Notice>
 
         <div class="form-popup" :style="{display: form}" v-if="edited_comment">
             <button @click="closePopup"></button>
@@ -104,11 +90,13 @@
 
 <script>
     import Navbar from '@/components/Navbar';
+    import Notice from "@/components/Notice";
+    import EditAndDelete from "@/components/EditAndDelete";
     import Reply from '@/components/Reply';
 
     export default {
         name: "Post",
-        components: {Navbar, Reply},
+        components: {EditAndDelete, Notice, Navbar, Reply},
         props: {
             post_id: {
                 type: String,
@@ -137,6 +125,21 @@
         async created () {
             await this.loadData()
             this.loaded = this.$loaded()
+        },
+        computed: {
+            isAuthor () {
+                return this.state.currentUser?.username === this.author?.username
+            },
+            editRoute () {
+                return {
+                    name: 'editPost',
+                    params: {
+                        resubname: this.post.parent_resub_name,
+                        post_id: this.post.id.toString(),
+                        post: this.post
+                    }
+                }
+            }
         },
         methods: {
             async loadData() {
@@ -302,34 +305,6 @@
 
     .resub a:hover {
         text-decoration: underline;
-    }
-
-    .edit-delete {
-        float: right;
-        font-size: 12px;
-    }
-
-    .edit-delete a {
-        text-decoration: none;
-        color: white;
-        margin-bottom: 2px;
-    }
-
-    .edit-delete a:hover {
-        text-decoration: underline;
-    }
-
-    .delete a:hover {
-        text-decoration: underline;
-    }
-
-    .delete {
-        color: #ff0000;
-    }
-
-    .delete:hover {
-        text-decoration: underline;
-        cursor: pointer;
     }
 
     .info {

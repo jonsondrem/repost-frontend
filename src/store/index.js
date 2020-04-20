@@ -37,10 +37,9 @@ const store = {
 
         return this.state.currentUser = (await this.http.get('/users/me/')).data
     },
-    resetState() {
+    logout () {
         this.state.currentUser = null
         this.state.userToken = null
-        this.state.apiUrl = null
     }
 }
 

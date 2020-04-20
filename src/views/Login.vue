@@ -23,16 +23,20 @@
 
     export default {
         name: "Login",
+        props: {
+            propUsername: String,
+            redirect: String
+        },
         data () {
             return {
-                username: '',
+                username: this.propUsername || '',
                 password: '',
                 errored: false,
-                from: null
+                from: this.redirect || null
             }
         },
         beforeRouteEnter (to, from, next) {
-            next(vm => vm.from = from.path)
+            next(vm => vm.from = vm.from || from.path)
         },
         created () {
             this.$loaded()

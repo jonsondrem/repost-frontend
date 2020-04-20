@@ -1,6 +1,13 @@
 <template>
     <div>
         <Navbar></Navbar>
+
+        <div v-if="state.currentUser" class="form-panel">
+            <router-link to="/resubs/create">
+                <a>Create Resub</a>
+            </router-link>
+        </div>
+
         <div class="resub-list">
             <div class="resub-list-header">
                 <div>Resub List</div>
@@ -24,6 +31,7 @@
         components: {Navbar},
         data () {
             return {
+                state: this.$store.state,
                 resubs: []
             }
         },
@@ -40,6 +48,26 @@
 </script>
 
 <style scoped>
+
+    .form-panel {
+        position: absolute;
+        top: 175px;
+        left: 50%;
+        transform: translate(-50%);
+    }
+
+    .form-panel a {
+        font-weight: bold;
+        font-size: 17px;
+        text-decoration: none;
+        color: #45b1ff;
+        transition: 0.2s;
+    }
+
+    .form-panel a:hover {
+        color: white;
+    }
+
     .resub-list {
         position: absolute;
         top: 200px;
