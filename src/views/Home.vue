@@ -58,7 +58,9 @@
                     this.$http.get(`/resubs/${resub.name}/posts/`).then(response => this.posts.push(...response.data))))
 
                 // Find and set the top post
-                this.topPost = this.posts.reduce((a, b) => a.votes > b.votes ? a : b)
+                if (this.posts) {
+                    this.topPost = this.posts.reduce((a, b) => a.votes > b.votes ? a : b)
+                }
             }
         }
     }
