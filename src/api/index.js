@@ -12,8 +12,6 @@ for (const [index, api] of process.env.VUE_APP_APIS.split(';').entries()) {
     }
 }
 
-console.log(apis)
-
 if (!localStorage.apiUrl) {
     localStorage.apiUrl = apis[0].url
 }
