@@ -134,7 +134,8 @@
                 return this.currentUser && this.author && this.currentUser === this.author
             },
             canEditPost () {
-                return this.isAuthor() || (this.resub && this.currentUser.username === this.resub.owner_username)
+                return this.isAuthor ||
+                    (this.currentUser && this.resub && this.currentUser.username === this.resub.owner_username)
             },
             editRoute () {
                 return {
@@ -173,6 +174,9 @@
                     // Ignore and leave this.user as null
                 }
 
+                await this.loadComments()
+            },
+            async loadComments () {
                 const commentList = (await this.$http.get(`/posts/${this.post_id}/comments/`)).data
                 for(const comment of commentList) {
                     comment.replies = []
@@ -190,27 +194,38 @@
                     }
                 }
             },
+            async reloadComments () {
+                this.comments.splice(0)
+                await this.loadComments()
+            },
             async deletePost() {
                 try {
                    await this.$http.delete(`/posts/${this.post_id}`)
-                   await this.$router.push(`/resubs/${this.post.parent_resub_name}/posts/`)
                 } catch (error) {
                     // TODO: handle delete error
                 }
+
+                await this.$router.push(`/resubs/${this.post.parent_resub_name}/posts/`)
             },
             async submitComment() {
+                this.$load()
                 const data = {
                     content: this.comment_content
                 }
 
                 try {
                     await this.$http.post(`/posts/${this.post_id}/comments/`, data)
-                    await this.$router.go(0)
+
                 } catch (error) {
                     //TODO send feedback to user
                 }
+
+                // Clear comments and reload
+                await this.reloadComments()
+                this.$loaded()
             },
             async saveComment(comment) {
+                this.$load()
                 if(comment.content === '') {
                     return
                 }
@@ -225,14 +240,20 @@
                 } catch (error) {
                     //TODO send feedback to user
                 }
+
+                this.$loaded()
             },
             async deleteComment(comment) {
+                this.$load()
+
                 try {
                     await this.$http.delete(`/comments/${comment.id}/`)
-                    await this.$router.go(0)
                 } catch (error) {
                     //TODO send feedback to user
                 }
+
+                this.comments = this.comments.filter(c => c !== comment)
+                this.$loaded()
             },
             getVoteColor (vote) {
                 if (vote > 0) {
@@ -510,8 +531,8 @@
         -moz-box-sizing: border-box;
         box-sizing: border-box;
         display: inline-block;
-        min-height: 12px;
-        height: 12px;
+        min-height: 16px;
+        height: 100px;
         border: none;
         border-radius: 4px 0 0 4px;
     }

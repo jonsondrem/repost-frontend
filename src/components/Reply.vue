@@ -66,12 +66,13 @@
                 this.replying = false
             },
             async submitReply(newReply, toReply) {
+                this.$load()
                 const data = {
                     content: newReply
                 }
 
                 try {
-                    this.$http.post(`/comments/${toReply.id}`, data)
+                    await this.$http.post(`/comments/${toReply.id}`, data)
                     this.$router.go(0)
                 } catch (error) {
                     //TODO send feedback to user
@@ -91,7 +92,7 @@
                 }
 
                 try {
-                    this.$http.patch(`/comments/${reply.id}`, data)
+                    await this.$http.patch(`/comments/${reply.id}`, data)
                 } catch (error) {
                     //TODO send feedback to user
                 }
