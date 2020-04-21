@@ -34,6 +34,7 @@
         <Notice v-else-if="loaded" title="Wow!">
             <p>Seems like there is nothing here.</p>
             <p v-if="!currentUser">Be the first to <router-link to="/signup">sign up</router-link> and create some content!</p>
+            <p v-else-if="resubs.length">Get started by posting in <router-link to="/resubs">a resub</router-link>!</p>
             <p v-else>Get started by <router-link to="/resubs/create">creating a resub</router-link>!</p>
         </Notice>
     </div>
