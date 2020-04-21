@@ -63,10 +63,10 @@
         },
         methods: {
             async loadData () {
-                const resubs = (await this.$http.get('/resubs/')).data
+                this.resubs = (await this.$http.get('/resubs/')).data
 
                 // Load all posts from every resub concurrently
-                await Promise.all(resubs.map(resub =>
+                await Promise.all(this.resubs.map(resub =>
                     this.$http.get(`/resubs/${resub.name}/posts/`).then(response => this.posts.push(...response.data))))
 
                 // Find and set the top post
