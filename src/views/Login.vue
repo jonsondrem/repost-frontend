@@ -50,7 +50,7 @@
                     grant_type: 'password',
                     username: this.username,
                     password: this.password,
-                    client_id: process.env.REPOST_CLIENT_ID || 'repost',
+                    client_id: process.env.VUE_APP_CLIENT_ID || 'repost',
                     scope: 'user'
                 });
 
