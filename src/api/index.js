@@ -1,18 +1,23 @@
 import axios from 'axios'
 
 const instance = axios.create();
-const apis = [
-    {name: 'FastAPI', url: 'http://127.0.0.1:8000/api'},
-    {name: 'Spring', url: 'http://127.0.0.1:8001/api'},
-    {name: 'ASP.NET', url: 'http://127.0.0.1:8002/api'}
-]
+
+// Load API names and URLs from environment variables
+// URLs will be VUE_APP_API_{number} in the order of API names defined in VUE_APP_APIS
+const apis = []
+for (const [index, api] of process.env.VUE_APP_APIS.split(';').entries()) {
+    const url = process.env[`VUE_APP_API_${index}`];
+    if (url) {
+        apis.push({name: api, url: url})
+    }
+}
 
 if (!localStorage.apiUrl) {
     localStorage.apiUrl = apis[0].url
 }
 
 instance.interceptors.request.use(config => {
-    config.baseURL = localStorage.apiUrl
+    config.baseURL = localStorage.apiUrl + '/api'
 
     // Always add authorization header if token is stored
     if (localStorage.userToken) {
