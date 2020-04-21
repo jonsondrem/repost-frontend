@@ -24,7 +24,10 @@
                     </router-link>
                 </div>
 
-                <EditAndDelete v-if="isAuthor" :delete-action="deletePost" :edit-route="editRoute"/>
+                <EditAndDelete v-if="canEditPost"
+                               :delete-action="deletePost"
+                               :edit-route="editRoute"
+                               :can-edit="canEditPost"/>
 
                 <div class="info">
                     <div class="section-header">{{ post.title }}</div>
@@ -39,14 +42,14 @@
                 <div class="empty-space"></div>
             </div>
 
-            <div class="comments" v-if="comments.length > 0">
+            <div class="comments" v-if="comments.length">
                 <div class="comment-header">Comments</div>
                 <div class="comment" v-for="comment in comments" :key="comment.id">
                     <div class="comment-circle">
                         <div>N/A</div>
                     </div>
                     <div class="comment-author">From:
-                        <span v-if="comment.author_username != null">
+                        <span v-if="comment.author_username">
                     <router-link :to="`/users/${comment.author_username}`">
                         <a>{{ comment.author_username }}</a>
                     </router-link>
@@ -71,7 +74,7 @@
                         </div>
                     </div>
 
-                    <div v-if="comment.replies.length > 0" class="replies">
+                    <div v-if="comment.replies.length" class="replies">
                         <Reply :replies="comment.replies" :dashes="''" :resub_owner="resub.owner_username" :post_author="post.author_username"></Reply>
                     </div>
                 </div>
@@ -127,17 +130,11 @@
             this.loaded = this.$loaded()
         },
         computed: {
-            isEligible () {
-                if(this.state.currentUser && this.author) {
-                    return this.state.currentUser.username === this.author.username || this.state.currentUser.username === this.resub.owner_username
-                }
-                return false
-            },
             isAuthor() {
-                if (this.state.currentUser && this.author) {
-                    return this.state.currentUser.username === this.author.username
-                }
-                return false
+                return this.currentUser && this.author && this.currentUser === this.author
+            },
+            canEditPost () {
+                return this.isAuthor() || (this.resub && this.currentUser.username === this.resub.owner_username)
             },
             editRoute () {
                 return {
@@ -355,29 +352,6 @@
     .content {
         font-size: 16px;
         padding-bottom: 32px;
-    }
-
-    .no-post {
-        position: absolute;
-        background-color: #2e2e2e;
-        width: 40%;
-        left: 50%;
-        top: 200px;
-        transform: translate(-50%, 50%);
-        color: white;
-    }
-
-    .no-post-title {
-        font-size: 22px;
-        font-weight: bold;
-        text-align: center;
-    }
-
-    .no-post-desc {
-        text-align: center;
-        padding-top: 16px;
-        padding-bottom: 12px;
-        font-size: 12px;
     }
 
     hr {
