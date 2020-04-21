@@ -38,4 +38,18 @@
         padding-bottom: 12px;
         font-size: 12px;
     }
+
+    p {
+        margin-bottom: 1em;
+        font-size: 11pt;
+    }
+
+    a {
+        color: #45b1ff;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
 </style>
