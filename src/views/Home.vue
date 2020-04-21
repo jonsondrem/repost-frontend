@@ -23,26 +23,33 @@
                 <p class="top-rated-post-content">{{ topPost.content }}</p>
             </div>
         </div>
-        <div v-else-if="loaded" class="top-rated-post">
+        <div v-else-if="loaded && posts.length" class="top-rated-post">
             <div class="top-rated-post-top">
                 <span class="top-post-title">Failed to find a top post</span>
             </div>
         </div>
+        <Notice v-else title="Wow!">
+            <p>Seems like there is nothing here.</p>
+            <p v-if="!this.state.currentUser">Be the first to <router-link to="/signup">sign up</router-link> and create some content!</p>
+            <p v-else>Get started by <router-link to="/resubs/create">creating a resub</router-link>!</p>
+        </Notice>
     </div>
 </template>
 
 <script>
     import Navbar from '@/components/Navbar';
     import PostList from '@/components/PostList';
+    import Notice from "@/components/Notice";
 
     export default {
         name: "Home",
-        components: {Navbar, PostList},
+        components: {Notice, Navbar, PostList},
         data () {
             return {
                 posts: [],
                 topPost: null,
-                loaded: false
+                loaded: false,
+                state: this.$store.state
             }
         },
         async created () {
@@ -58,7 +65,7 @@
                     this.$http.get(`/resubs/${resub.name}/posts/`).then(response => this.posts.push(...response.data))))
 
                 // Find and set the top post
-                if (this.posts) {
+                if (this.posts.length) {
                     this.topPost = this.posts.reduce((a, b) => a.votes > b.votes ? a : b)
                 }
             }
