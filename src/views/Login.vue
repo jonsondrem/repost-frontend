@@ -57,7 +57,7 @@
                 try {
                     const oauth_token = (await this.$http.post('/auth/token', data)).data
                     this.$store.state.userToken = oauth_token.access_token
-                    await this.$router.push(this.from)
+                    await this.$router.push(this.from || '/')
                 }
                 catch (error) {
                     this.errored = true;
