@@ -1,36 +1,39 @@
 <template>
     <div id="post-data" class="post-data">
         <Navbar/>
-        <PostList :posts="posts"/>
+        <template v-if="posts.length">
+            <PostList :posts="posts"/>
 
-        <div v-if="topPost" class="top-rated-post">
-            <router-link :to="`resubs/${topPost.parent_resub_name}/posts/${topPost.id}`" class="post-link"></router-link>
-            <div class="top-rated-post-top">
-                <span class="top-post-title">Top Rated Post</span>
-                <span class="post-info-space">From </span>
-                <router-link :to="`resubs/${topPost.parent_resub_name}`" class="post-info-resub">
-                    <a>{{ topPost.parent_resub_name }}</a>
-                </router-link> -
-                <span class="post-info-space">By </span>
-                <router-link :to="`users/${topPost.author_username}`" class="top-author">
-                    <a>{{ topPost.author_username }}</a>
-                </router-link>
-                -
-                <span>Votes </span><span class="top-post-votes">{{ topPost.votes }}</span>
+            <div v-if="topPost" class="top-rated-post">
+                <router-link :to="`resubs/${topPost.parent_resub_name}/posts/${topPost.id}`" class="post-link"></router-link>
+                <div class="top-rated-post-top">
+                    <span class="top-post-title">Top Rated Post</span>
+                    <span class="post-info-space">From </span>
+                    <router-link :to="`resubs/${topPost.parent_resub_name}`" class="post-info-resub">
+                        <a>{{ topPost.parent_resub_name }}</a>
+                    </router-link> -
+                    <span class="post-info-space">By </span>
+                    <router-link :to="`users/${topPost.author_username}`" class="top-author">
+                        <a>{{ topPost.author_username }}</a>
+                    </router-link>
+                    -
+                    <span>Votes </span><span class="top-post-votes">{{ topPost.votes }}</span>
+                </div>
+                <div class="top-rated-post-bottom">
+                    <span class="top-rated-post-title">{{ topPost.title }}</span>
+                    <p class="top-rated-post-content">{{ topPost.content }}</p>
+                </div>
             </div>
-            <div class="top-rated-post-bottom">
-                <span class="top-rated-post-title">{{ topPost.title }}</span>
-                <p class="top-rated-post-content">{{ topPost.content }}</p>
+            <div v-else-if="loaded" class="top-rated-post">
+                <div class="top-rated-post-top">
+                    <span class="top-post-title">Failed to find a top post</span>
+                </div>
             </div>
-        </div>
-        <div v-else-if="loaded && posts.length" class="top-rated-post">
-            <div class="top-rated-post-top">
-                <span class="top-post-title">Failed to find a top post</span>
-            </div>
-        </div>
-        <Notice v-else title="Wow!">
+        </template>
+
+        <Notice v-else-if="loaded" title="Wow!">
             <p>Seems like there is nothing here.</p>
-            <p v-if="!this.state.currentUser">Be the first to <router-link to="/signup">sign up</router-link> and create some content!</p>
+            <p v-if="!currentUser">Be the first to <router-link to="/signup">sign up</router-link> and create some content!</p>
             <p v-else>Get started by <router-link to="/resubs/create">creating a resub</router-link>!</p>
         </Notice>
     </div>
@@ -49,7 +52,7 @@
                 posts: [],
                 topPost: null,
                 loaded: false,
-                state: this.$store.state
+                currentUser: null
             }
         },
         async created () {
@@ -68,6 +71,8 @@
                 if (this.posts.length) {
                     this.topPost = this.posts.reduce((a, b) => a.votes > b.votes ? a : b)
                 }
+
+                this.currentUser = await this.$store.getCurrentUser()
             }
         }
     }
