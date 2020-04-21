@@ -50,6 +50,7 @@
         components: {Notice, Navbar, PostList},
         data () {
             return {
+                resubs: [],
                 posts: [],
                 topPost: null,
                 loaded: false,
