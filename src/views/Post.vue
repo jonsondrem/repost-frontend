@@ -24,11 +24,11 @@
                     </router-link>
                 </div>
 
-            <div v-if="isAuthor" class="edit-delete">
-                <router-link :to="{name: 'EditPost',
+            <div v-if="isEligible" class="edit-delete">
+                <router-link v-if="isAuthor" :to="{name: 'EditPost',
                     params: { resubname: post.parent_resub_name, post_id: post.id.toString(), post: post} }">
                     <a>Edit</a>
-                </router-link> -
+                </router-link> <span v-if="isAuthor">- </span>
                 <span @click="deletePost" class="delete">Delete</span>
             </div>
 
@@ -62,18 +62,23 @@
 
                     <div v-if="state.currentUser">
                         <div class="comment-edit-delete">
-                            <span v-if="state.currentUser.username === comment.author_username" @click="showEditPopup(comment)" class="edit-comment">Edit</span>
-                            <span v-if="state.currentUser.username === comment.author_username"> - </span>
-                            <span @click="deleteComment(comment)" class="delete" v-if="state.currentUser.username === comment.author_username || state.currentUser.username === author.username">Delete</span>
+                            <span v-if="canEdit(comment) && !comment.editShow" @click="showEdit(comment)" class="edit-comment">Edit</span>
+                            <span v-if="canEdit(comment) && comment.editShow" @click="cancelEdit(comment)" class="edit-comment">Cancel</span>
+                            <span v-if="canEdit(comment)"> - </span>
+                            <span @click="deleteComment(comment)" class="delete" v-if="canDelete(comment)">Delete</span>
                         </div>
                     </div>
 
                     <div class="comment-info">
-                        <div class="comment-content">{{ comment.content }}</div>
+                        <div v-if="!comment.editShow" class="comment-content">{{ comment.content }}</div>
+                        <div v-else class="edit-comment-input">
+                            <textarea placeholder="Enter your comment here..." v-model="comment.content"></textarea>
+                            <button @click="saveComment(comment)">Edit Comment</button>
+                        </div>
                     </div>
 
                     <div v-if="comment.replies.length > 0" class="replies">
-                        <Reply :replies="comment.replies" :dashes="''"></Reply>
+                        <Reply :replies="comment.replies" :dashes="''" :resub_owner="resub.owner_username" :post_author="post.author_username"></Reply>
                     </div>
                 </div>
             </div>
@@ -85,12 +90,6 @@
         <div v-else-if="loaded" class="no-post">
             <div class="no-post-title">Post not found!</div>
             <div class="no-post-desc">We were not able to load the post. Have you inputted the url correctly?</div>
-        </div>
-
-        <div class="form-popup" :style="{display: form}" v-if="edited_comment">
-            <button @click="closePopup"></button>
-            <textarea v-model="edited_comment.content"></textarea>
-            <button @click="editComment()">Edit comment</button>
         </div>
     </div>
 </template>
@@ -124,7 +123,8 @@
                 replies: [],
                 comment_content: '',
                 edited_comment: null,
-                form: 'none'
+                form: 'none',
+                resub: null
             }
         },
         async created () {
@@ -132,8 +132,17 @@
             this.loaded = this.$loaded()
         },
         computed: {
-            isAuthor () {
-                return this.state.currentUser?.username === this.author?.username
+            isEligible () {
+                if(this.state.currentUser && this.author) {
+                    return this.state.currentUser.username === this.author.username || this.state.currentUser.username === this.resub.owner_username
+                }
+                return false
+            },
+            isAuthor() {
+                if(this.state.currentUser && this.author) {
+                    return this.state.currentUser.username === this.author.username
+                }
+                return false
             }
         },
         methods: {
@@ -150,6 +159,13 @@
                 }
 
                 try {
+                    this.resub = (await this.$http.get(`/resubs/${this.resubname}/`)).data
+                } catch (error) {
+                    this.post = null
+                    return
+                }
+
+                try {
                     this.author = (await this.$http.get(`/users/${this.post.author_username}/`)).data
                 } catch (error) {
                     // Ignore and leave this.user as null
@@ -158,6 +174,8 @@
                 const commentList = (await this.$http.get(`/posts/${this.post_id}/comments/`)).data
                 for(const comment of commentList) {
                     comment.replies = []
+                    comment.editShow = false;
+                    comment.oldContent = ''
                     for(const reply of commentList) {
                         if(comment.id === reply.parent_comment_id) {
                             comment.replies.push(reply)
@@ -190,14 +208,18 @@
                     //TODO send feedback to user
                 }
             },
-            async editComment() {
+            async saveComment(comment) {
+                if(comment.content === '') {
+                    return
+                }
+
                 const data = {
-                    content: this.edited_comment.content
+                    content: comment.content
                 }
 
                 try {
-                    await this.$http.patch(`/comments/${this.edited_comment.id}/`, data)
-                    await this.$router.go(0)
+                    await this.$http.patch(`/comments/${comment.id}/`, data)
+                    comment.editShow = false
                 } catch (error) {
                     //TODO send feedback to user
                 }
@@ -218,12 +240,19 @@
                 }
                 return 'color: #ffffff';
             },
-            showEditPopup(comment) {
-                this.form = 'block'
-                this.edited_comment = comment
+            showEdit(comment) {
+                comment.oldContent = comment.content
+                comment.editShow = true;
             },
-            closePopup() {
-                this.form = 'none'
+            cancelEdit(comment) {
+                comment.content = comment.oldContent
+                comment.editShow = false;
+            },
+            canEdit(comment) {
+                return this.state.currentUser.username === comment.author_username
+            },
+            canDelete(comment) {
+                return this.state.currentUser.username === this.author.username || this.state.currentUser.username === comment.author_username
             }
         }
     }
@@ -433,6 +462,7 @@
         color: #45b1ff;
         font-size: 17px;
         text-align: center;
+        margin-bottom: 12px;
         margin-top: 12px;
     }
 
@@ -441,7 +471,7 @@
         width: 100%;
         color: white;
         border-radius: 20px 0 0 0;
-        margin-top: 12px;
+        margin-bottom: 12px;
     }
 
     .comment-circle {
@@ -500,14 +530,58 @@
         padding-left: 2px;
         padding-top: 8px;
         padding-bottom: 8px;
+        height: 100%;
     }
 
     .comment-info hr {
         width: 100%;
     }
 
+    .comment-info textarea {
+        height: 12px;
+    }
+
     .comment-content {
         font-size: 12px;
+    }
+
+    .edit-comment-input {
+        position: relative;
+        width: 50%;
+        margin-left: 2px;
+        font-size: 12px;
+        height: 100%;
+    }
+
+    .edit-comment-input textarea{
+        width: 70%;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        display: inline-block;
+        min-height: 12px;
+        height: 12px;
+        border: none;
+        border-radius: 4px 0 0 4px;
+    }
+
+    .edit-comment-input button {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        position: absolute;
+        width: 30%;
+        height: 100%;
+        border: none;
+        background-color: #242424;
+        color: #45b1ff;
+        font-family: Consolas, monaco, monospace;
+        border-radius: 0 4px 4px 0;
+        transition: 0.2s;
+    }
+
+    .edit-comment-input button:hover {
+        color: white;
     }
 
     .replies {
@@ -526,16 +600,5 @@
 
     .replies a:hover {
         text-decoration: underline;
-    }
-
-    .form-popup {
-        position: fixed;
-        width: 250px;
-        height: 250px;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        transition: 0.2s;
-        background-color: #242424;
     }
 </style>
