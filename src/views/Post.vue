@@ -37,7 +37,7 @@
                 <div class="comment-input-header">Comment:</div>
                 <div class="comment-input">
                     <textarea placeholder="Enter your comment here..." v-model="comment_content"></textarea>
-                    <button @click="submitComment">Submit Comment</button>
+                    <button @click="submitComment(comment_content)">Submit Comment</button>
                 </div>
                 <div class="empty-space"></div>
             </div>
@@ -59,23 +59,40 @@
 
                     <div v-if="state.currentUser">
                         <div class="comment-edit-delete">
-                            <span v-if="canEdit(comment) && !comment.editShow" @click="showEdit(comment)" class="edit-comment">Edit</span>
-                            <span v-if="canEdit(comment) && comment.editShow" @click="cancelEdit(comment)" class="edit-comment">Cancel</span>
+                            <span v-if="canEdit(comment) && !comment.editing" @click="showEdit(comment)" class="edit-comment">Edit</span>
+                            <span v-if="canEdit(comment) && comment.editing" @click="cancelEdit(comment)" class="edit-comment">Cancel</span>
                             <span v-if="canEdit(comment)"> - </span>
                             <span @click="deleteComment(comment)" class="delete" v-if="canDelete(comment)">Delete</span>
+                            <span v-if="!comment.replying"> - </span>
+                            <span @click="showReply(comment)" v-if="!comment.replying" class="reply-button">Reply</span>
                         </div>
                     </div>
 
                     <div class="comment-info">
-                        <div v-if="!comment.editShow" class="comment-content">{{ comment.content }}</div>
+                        <div v-if="!comment.editing" class="comment-content">{{ comment.content }}</div>
                         <div v-else class="edit-comment-input">
                             <textarea placeholder="Enter your comment here..." v-model="comment.content"></textarea>
                             <button @click="saveComment(comment)">Edit Comment</button>
                         </div>
                     </div>
+                    <div class="reply" v-if="comment.replying">
+                        <textarea placeholder="Enter your reply here..." v-model="reply_content"></textarea>
+                        <button @click="submitReply(reply_content, comment)" class="button1">Submit Reply</button>
+                        <button @click="cancelReply(comment)" class="button2">Cancel</button>
+                    </div>
 
-                    <div v-if="comment.replies.length" class="replies">
-                        <Reply :replies="comment.replies" :dashes="''" :resub_owner="resub.owner_username" :post_author="post.author_username"></Reply>
+                    <div v-if="comment.replies.length > 0 && resub" class="replies">
+                        <div v-for="reply in comment.replies" :key="reply.id">
+                            <Reply :replies="comment.replies" :dashes="''" :resub_owner="resub.owner_username"
+                               :post_author="post.author_username" :comment="reply"
+                               @submit-reply="submitReply"
+                               @show-reply="showReply"
+                               @cancel-reply="cancelReply"
+                               @save-edit="saveComment"
+                               @show-edit="showEdit"
+                               @cancel-edit="cancelEdit"
+                               @delete-reply="deleteComment"></Reply>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -121,6 +138,7 @@
                 replies: [],
                 comment_content: '',
                 edited_comment: null,
+                reply_content: null,
                 form: 'none',
                 resub: null
             }
@@ -131,11 +149,16 @@
         },
         computed: {
             isAuthor() {
-                return this.currentUser && this.author && this.currentUser === this.author
+                if(this.state.currentUser) {
+                    return this.state.currentUser === this.author
+                }
+                return false
             },
             canEditPost () {
-                return this.isAuthor ||
-                    (this.currentUser && this.resub && this.currentUser.username === this.resub.owner_username)
+                if(this.resub && this.state.currentUser) {
+                    return this.isAuthor || this.state.currentUser.username === this.resub.owner_username
+                }
+                return false
             },
             editRoute () {
                 return {
@@ -180,7 +203,8 @@
                 const commentList = (await this.$http.get(`/posts/${this.post_id}/comments/`)).data
                 for(const comment of commentList) {
                     comment.replies = []
-                    comment.editShow = false;
+                    comment.editing = false
+                    comment.replying = false
                     comment.oldContent = ''
                     for(const reply of commentList) {
                         if(comment.id === reply.parent_comment_id) {
@@ -196,6 +220,7 @@
             },
             async reloadComments () {
                 this.comments.splice(0)
+                this.replies.splice(0)
                 await this.loadComments()
             },
             async deletePost() {
@@ -206,21 +231,25 @@
                 }
 
                 await this.$router.push(`/resubs/${this.post.parent_resub_name}/posts/`)
+                this.$forceUpdate()
             },
-            async submitComment() {
+            async submitComment(commentContent) {
                 this.$load()
                 const data = {
-                    content: this.comment_content
+                    content: commentContent
                 }
 
                 try {
-                    await this.$http.post(`/posts/${this.post_id}/comments/`, data)
-
+                    const newComment = (await this.$http.post(`/posts/${this.post_id}/comments/`, data)).data
+                    newComment.replies = []
+                    newComment.editing = false
+                    newComment.replying = false
+                    newComment.oldContent = ''
+                    this.comments.push(newComment)
                 } catch (error) {
                     //TODO send feedback to user
                 }
 
-                // Clear comments and reload
                 await this.reloadComments()
                 this.$loaded()
             },
@@ -236,7 +265,7 @@
 
                 try {
                     await this.$http.patch(`/comments/${comment.id}/`, data)
-                    comment.editShow = false
+                    comment.editing = false
                 } catch (error) {
                     //TODO send feedback to user
                 }
@@ -253,6 +282,27 @@
                 }
 
                 this.comments = this.comments.filter(c => c !== comment)
+                await this.reloadComments()
+                this.$loaded()
+            },
+            async submitReply(newReplyContent, toComment) {
+                this.$load()
+                const data = {
+                    content: newReplyContent
+                }
+
+                try {
+                    const newReply = (await this.$http.post(`/comments/${toComment.id}`, data)).data
+                    newReply.replies = []
+                    newReply.editing = false
+                    newReply.replying = false
+                    newReply.oldContent = ''
+                    toComment.replies.push(newReply)
+                } catch (error) {
+                    //TODO send feedback to user
+                }
+
+                toComment.replying = false;
                 this.$loaded()
             },
             getVoteColor (vote) {
@@ -265,11 +315,17 @@
             },
             showEdit(comment) {
                 comment.oldContent = comment.content
-                comment.editShow = true;
+                comment.editing = true;
             },
             cancelEdit(comment) {
                 comment.content = comment.oldContent
-                comment.editShow = false;
+                comment.editing = false;
+            },
+            showReply(comment) {
+                comment.replying = true;
+            },
+            cancelReply(comment) {
+                comment.replying = false;
             },
             canEdit(comment) {
                 return this.state.currentUser.username === comment.author_username
@@ -483,6 +539,24 @@
         text-decoration: underline;
     }
 
+    .delete {
+        color: #ff0000;
+    }
+
+    .delete:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .reply-button {
+        color: #45b1ff;
+        cursor: pointer;
+    }
+
+    .reply-button:hover {
+        text-decoration: underline;
+    }
+
     .comment-edit-delete {
         float: right;
         font-size: 12px;
@@ -554,6 +628,54 @@
 
     .edit-comment-input button:hover {
         color: white;
+    }
+
+    .reply {
+        position: relative;
+        width: 50%;
+    }
+
+    .reply textarea{
+        width: 70%;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        display: inline-block;
+        min-height: 24px;
+        height: 24px;
+        border: none;
+        border-radius: 4px 0 0 4px;
+    }
+
+    .reply button {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        position: absolute;
+        width: 30%;
+        height: 50%;
+        border: none;
+        background-color: #242424;
+        color: #45b1ff;
+        font-family: Consolas, monaco, monospace;
+        transition: 0.2s;
+        font-size: 12px;
+    }
+
+    .reply button:hover {
+        color: white;
+    }
+
+    .reply .button1 {
+        position: absolute;
+        top: 0;
+        border-radius: 0 4px 0 0;
+    }
+
+    .reply .button2 {
+        position: absolute;
+        bottom: 0;
+        border-radius: 0 0 4px 0;
     }
 
     .replies {

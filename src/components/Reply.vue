@@ -1,25 +1,34 @@
 <template>
     <div>
-        <div v-for="reply in replies" :key="reply.id">
-            <span class="dashes">{{ dashes }}</span><router-link :to="`/users/${reply.author_username}`"><a class="username">{{ reply.author_username }}:</a></router-link>
-            <template v-if="!editing"><span class="content">{{ reply.content }}</span></template>
-            <template v-else>
-                <div class="comment-input">
-                    <textarea placeholder="Enter your comment here..." v-model="reply.content"></textarea>
-                    <button @click="submitEditedComment(reply)">Edit Comment</button>
-                </div>
-            </template>
-            <a class="reply" @click="replyComment(reply)" v-if="$store.state.currentUser">reply</a>
-            <a class="delete" @click="deleteComment(reply)" v-if="isEligible(reply)">delete</a>
-            <a class="edit" @click="editComment(reply)" v-if="isReplier(reply) && !editing">edit</a>
-            <a class="edit" @click="cancelEditComment(reply)" v-else-if="isReplier(reply) && editing">cancel</a>
-            <div class="reply-input" v-if="replying">
-                <textarea placeholder="Enter your reply here..." v-model="newReply"></textarea>
-                <button @click="submitReply(newReply, reply)" class="button1">Submit Reply</button>
-                <button @click="cancelReply" class="button2">Cancel</button>
+        <span class="dashes">{{ dashes }}</span>
+        <router-link :to="`/users/${comment.author_username}`"><a class="username">{{ comment.author_username }}:</a>
+        </router-link>
+        <template v-if="!comment.editing"><span class="content">{{ comment.content }}</span></template>
+        <template v-else>
+            <div class="comment-input">
+                <textarea placeholder="Enter your comment here..." v-model="comment.content"></textarea>
+                <button @click="saveEdit(comment)">Edit Comment</button>
             </div>
-            <div v-if="reply.replies.length > 0" class="new-line">
-                <Reply :replies="reply.replies" :dashes="dashes + '->'" :resub_owner="resub_owner" :post_author="post_author"></Reply>
+        </template>
+        <a class="reply" @click="showReply(comment)" v-if="$store.state.currentUser && !comment.editing">reply</a>
+        <a class="delete" @click="deleteComment(comment)" v-if="isEligible(comment)">delete</a>
+        <a class="edit" @click="showEdit(comment)" v-if="isReplier(comment) && !comment.editing">edit</a>
+        <a class="edit" @click="cancelEdit(comment)" v-else-if="isReplier(comment) && comment.editing">cancel</a>
+        <div class="reply-input" v-if="comment.replying">
+            <textarea placeholder="Enter your reply here..." v-model="newReply"></textarea>
+            <button @click="submitReply(newReply, comment)" class="button1">Submit Reply</button>
+            <button @click="cancelReply(comment)" class="button2">Cancel</button>
+        </div>
+        <div v-if="comment.replies.length > 0" class="new-line">
+            <div v-for="reply in comment.replies" :key="reply.id">
+                <Reply :replies="comment.replies" :dashes="dashes + '->'" :resub_owner="resub_owner"
+                       :post_author="post_author" :comment="reply"
+                       @show-reply="showReply"
+                       @cancel-reply="cancelReply"
+                       @show-edit="showEdit"
+                       @cancel-edit="cancelEdit"
+                       @delete-reply="deleteComment"></Reply>
+                <div class="new-line"></div>
             </div>
         </div>
     </div>
@@ -48,74 +57,92 @@
                 type: String,
                 default: '',
                 required: true
+            },
+            comment: {
+                type: Object,
+                default: null,
+                required: true
             }
         },
         data () {
             return {
-                editing: false,
-                replying: false,
                 oldComment: '',
                 newReply: ''
             }
         },
         methods: {
-            replyComment() {
-                this.replying = true;
+            showReply(reply) {
+                this.$emit('show-reply', reply)
+                this.$forceUpdate()
             },
-            cancelReply() {
-                this.replying = false
+            cancelReply(reply) {
+                this.$emit('cancel-reply', reply)
+                this.$forceUpdate()
             },
-            async submitReply(newReply, toReply) {
+            async submitReply(content, reply) {
                 this.$load()
                 const data = {
-                    content: newReply
+                    content: content
                 }
 
                 try {
-                    await this.$http.post(`/comments/${toReply.id}`, data)
-                    this.$router.go(0)
+                    const newReply = (await this.$http.post(`/comments/${reply.id}`, data)).data
+                    newReply.replies = []
+                    newReply.editing = false
+                    newReply.replying = false
+                    newReply.oldContent = ''
+                    reply.replies.push(newReply)
                 } catch (error) {
                     //TODO send feedback to user
                 }
+
+                reply.replying = false;
+                this.$loaded()
+                this.$forceUpdate()
             },
-            editComment(reply) {
-                this.oldComment = reply.content
-                this.editing = true;
+            showEdit(reply) {
+                this.$emit('show-edit', reply)
+                this.$forceUpdate()
             },
-            cancelEditComment(reply) {
-                reply.content = this.oldComment
-                this.editing = false;
+            cancelEdit(reply) {
+                this.$emit('cancel-edit', reply)
+                this.$forceUpdate()
             },
-            async submitEditedComment(reply) {
+            async saveEdit(reply) {
+                this.$load()
+                if(reply.content === '') {
+                    return
+                }
+
                 const data = {
                     content: reply.content
                 }
 
                 try {
-                    await this.$http.patch(`/comments/${reply.id}`, data)
+                    await this.$http.patch(`/comments/${reply.id}/`, data)
+                    reply.editing = false
                 } catch (error) {
                     //TODO send feedback to user
                 }
 
-                this.editing = false
+                this.$loaded()
+                this.$forceUpdate()
             },
-            async deleteComment(reply) {
-                try {
-                    await this.$http.delete(`/comments/${reply.id}/`)
-                    await this.$router.go(0)
-                } catch (error) {
-                    //TODO send feedback to user
-                }
+            deleteComment(reply) {
+                this.$emit('delete-reply', reply)
+                this.$forceUpdate()
             },
             isReplier(reply) {
-                if (this.$store.state.currentUser.username) {
+                if (this.$store.state.currentUser) {
                     return reply.author_username === this.$store.state.currentUser.username
                 }
                 return false
             },
             isEligible(reply) {
-                if (this.$store.state.currentUser.username) {
-                    return reply.author_username || this.author_username || this.resub_owner === this.$store.state.currentUser.username
+                if (this.$store.state.currentUser) {
+                    return (reply.author_username === this.$store.state.currentUser.username ||
+                        this.author_username === this.$store.state.currentUser.username ||
+                        this.resub_owner === this.$store.state.currentUser.username)
                 }
                 return false
             }
