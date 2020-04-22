@@ -18,8 +18,8 @@
                     <router-link to="/login" class="nav-button">Login</router-link>
                     <router-link to="/signup" class="nav-button">Sign Up</router-link>
                 </template>
-                <select v-model="selectedApiUrl" @change="changeApiUrl" class="nav-button">
-                    <option v-for="api in apis" :key="api.name" :value="api.url">
+                <select v-model="selectedApi" @change="changeApiUrl" class="nav-button">
+                    <option v-for="(api, index) in apis" :key="index" :value="index">
                         {{ api.name }}
                     </option>
                 </select>
@@ -39,7 +39,7 @@
             return {
                 user: null,
                 apis: api.apis,
-                selectedApiUrl: localStorage.apiUrl,
+                selectedApi: this.$store.state.api,
                 loaded: false
             }
         },
@@ -49,8 +49,7 @@
         },
         methods: {
             changeApiUrl () {
-                this.$store.logout()
-                this.$store.state.apiUrl = this.selectedApiUrl
+                this.$store.state.api = this.selectedApi
                 this.$router.go(0)
             }
         }
