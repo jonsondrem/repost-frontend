@@ -1,6 +1,6 @@
 <template>
     <div class="edit-delete">
-        <router-link :to="editRoute"><a>Edit</a></router-link>
+        <router-link v-if="canEdit" :to="editRoute"><a>Edit</a></router-link>
         -
         <span @click="deleteAction" class="delete">Delete</span>
     </div>
@@ -10,14 +10,18 @@
         name: 'EditAndDelete',
         props: {
             editRoute: [String, Object],
-            deleteAction: Function
+            deleteAction: Function,
+            canEdit: {
+                type: Boolean,
+                default: true
+            }
         }
     }
 </script>
 <style scoped>
 
     .edit-delete {
-        float: right;
+        text-align: right;
         font-size: 12px;
     }
 
