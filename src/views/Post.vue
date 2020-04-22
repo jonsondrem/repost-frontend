@@ -24,10 +24,10 @@
                     </router-link>
                 </div>
 
-                <EditAndDelete v-if="canEditPost"
+                <EditAndDelete v-if="canDeletePost"
                                :delete-action="deletePost"
                                :edit-route="editRoute"
-                               :can-edit="canEditPost"/>
+                               :can-edit="isAuthor"/>
 
                 <div class="info">
                     <div class="section-header">{{ post.title }}</div>
@@ -149,12 +149,12 @@
         },
         computed: {
             isAuthor() {
-                if(this.state.currentUser) {
-                    return this.state.currentUser === this.author
+                if(this.author && this.state.currentUser) {
+                    return this.state.currentUser.username === this.author.username
                 }
                 return false
             },
-            canEditPost () {
+            canDeletePost () {
                 if(this.resub && this.state.currentUser) {
                     return this.isAuthor || this.state.currentUser.username === this.resub.owner_username
                 }
