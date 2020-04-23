@@ -1,7 +1,7 @@
 <template>
     <div class="edit-delete">
-        <router-link v-if="canEdit" :to="editRoute"><a>Edit</a></router-link>
-        -
+        <span v-if="canEdit"><router-link :to="editRoute"><a>Edit</a></router-link>
+        - </span>
         <span @click="deleteAction" class="delete">Delete</span>
     </div>
 </template>
@@ -35,11 +35,11 @@
         text-decoration: underline;
     }
 
-    .edit-delete span {
+    .edit-delete .delete {
         color: #ff0000;
     }
 
-    .edit-delete span:hover {
+    .edit-delete .delete:hover {
         text-decoration: underline;
         cursor: pointer;
     }
