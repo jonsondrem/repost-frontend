@@ -6,18 +6,26 @@ const instance = axios.create();
 // URLs will be VUE_APP_API_{number} in the order of API names defined in VUE_APP_APIS
 const apis = []
 for (const [index, api] of process.env.VUE_APP_APIS.split(';').entries()) {
-    const url = process.env[`VUE_APP_API_${index}`];
+    let url = process.env[`VUE_APP_API_${index}`];
+    if (!url.endsWith('/api')) {
+        url += '/api'
+    }
+
     if (url) {
         apis.push({name: api, url: url})
     }
 }
 
-if (!localStorage.apiUrl) {
-    localStorage.apiUrl = apis[0].url
+if (!localStorage.selectedApi || parseInt(localStorage.selectedApi) >= apis.length) {
+    localStorage.selectedApi = 0
+}
+
+if (!localStorage.apiStore) {
+    localStorage.apiStore = []
 }
 
 instance.interceptors.request.use(config => {
-    config.baseURL = localStorage.apiUrl + '/api'
+    config.baseURL = apis[parseInt(localStorage.selectedApi)].url
 
     // Always add authorization header if token is stored
     if (localStorage.userToken) {

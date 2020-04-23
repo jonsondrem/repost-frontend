@@ -16,19 +16,18 @@ const store = {
         set userToken (value) {
             setLocalStorage('userToken', value)
         },
-        get apiUrl () {
-            return localStorage.getItem('apiUrl')
+        get api () {
+            return parseInt(localStorage.getItem('selectedApi') || 0)
         },
-        set apiUrl (value) {
-            setLocalStorage('apiUrl', value)
+        set api (value) {
+            this.currentUser = null
+            this.userToken = null
+            setLocalStorage('selectedApi', value)
         }
     },
     async getCurrentUser () {
         if (!this.state.userToken) {
-            if (this.state.currentUser) {
-                this.state.currentUser = null
-            }
-            return null
+            return this.state.currentUser = null
         }
 
         if (this.state.currentUser) {
