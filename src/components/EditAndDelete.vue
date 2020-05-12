@@ -21,8 +21,10 @@
 <style scoped>
 
     .edit-delete {
-        text-align: right;
+        position: absolute;
+        display: inline;
         font-size: 12px;
+        right: 0;
     }
 
     .edit-delete a {

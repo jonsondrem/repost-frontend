@@ -94,7 +94,7 @@
                 try {
                    await this.$http.delete(`/resubs/${this.resub.name}/`)
                 } catch (error) {
-                    // TODO: handle delete error
+                    return
                 }
 
                 await this.$router.push('/')

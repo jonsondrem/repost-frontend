@@ -9,7 +9,6 @@
         <div class="topnav" id="topnav">
             <div class="left">
                 <router-link to="/resubs" class="nav-button">Resubs</router-link>
-                <router-link to="/support" class="nav-button">Support</router-link>
             </div>
 
             <div class="right" id="login">

@@ -20,10 +20,6 @@ if (!localStorage.selectedApi || parseInt(localStorage.selectedApi) >= apis.leng
     localStorage.selectedApi = 0
 }
 
-if (!localStorage.apiStore) {
-    localStorage.apiStore = []
-}
-
 instance.interceptors.request.use(config => {
     config.baseURL = apis[parseInt(localStorage.selectedApi)].url
 
