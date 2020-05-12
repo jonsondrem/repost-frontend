@@ -29,8 +29,6 @@
 
 <script>
     import api from '@/api'
-    import 'nprogress/nprogress.js'
-    import 'nprogress/nprogress.css'
 
     export default {
         name: "Navbar",
