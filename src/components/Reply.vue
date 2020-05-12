@@ -93,7 +93,7 @@
                     newReply.oldContent = ''
                     reply.replies.push(newReply)
                 } catch (error) {
-                    //TODO send feedback to user
+                    return
                 }
 
                 reply.replying = false;
@@ -122,7 +122,7 @@
                     await this.$http.patch(`/comments/${reply.id}/`, data)
                     reply.editing = false
                 } catch (error) {
-                    //TODO send feedback to user
+                    return
                 }
 
                 this.$loaded()

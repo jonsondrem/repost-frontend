@@ -63,7 +63,7 @@
                             <span v-if="canEdit(comment) && comment.editing" @click="cancelEdit(comment)" class="edit-comment">Cancel</span>
                             <span v-if="canEdit(comment)"> - </span>
                             <span @click="deleteComment(comment)" class="delete" v-if="canDelete(comment)">Delete</span>
-                            <span v-if="!comment.replying"> - </span>
+                            <span v-if="canDelete(comment)"> - </span>
                             <span @click="showReply(comment)" v-if="!comment.replying" class="reply-button">Reply</span>
                         </div>
                     </div>
@@ -227,11 +227,18 @@
                 try {
                    await this.$http.delete(`/posts/${this.post_id}`)
                 } catch (error) {
-                    // TODO: handle delete error
+                    return
                 }
 
                 await this.$router.push(`/resubs/${this.post.parent_resub_name}/posts/`)
                 this.$forceUpdate()
+            },
+            async votePost(number) {
+                try {
+                    await this.$http.patch(`/posts/${this.post_id}/vote/${number}`)
+                } catch (error) {
+                    return
+                }
             },
             async submitComment(commentContent) {
                 this.$load()
@@ -247,7 +254,7 @@
                     newComment.oldContent = ''
                     this.comments.push(newComment)
                 } catch (error) {
-                    //TODO send feedback to user
+                    return
                 }
 
                 await this.reloadComments()
@@ -267,7 +274,7 @@
                     await this.$http.patch(`/comments/${comment.id}/`, data)
                     comment.editing = false
                 } catch (error) {
-                    //TODO send feedback to user
+                    return
                 }
 
                 this.$loaded()
@@ -278,7 +285,7 @@
                 try {
                     await this.$http.delete(`/comments/${comment.id}/`)
                 } catch (error) {
-                    //TODO send feedback to user
+                    return
                 }
 
                 this.comments = this.comments.filter(c => c !== comment)
@@ -299,7 +306,7 @@
                     newReply.oldContent = ''
                     toComment.replies.push(newReply)
                 } catch (error) {
-                    //TODO send feedback to user
+                    return
                 }
 
                 toComment.replying = false;
