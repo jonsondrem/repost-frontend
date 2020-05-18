@@ -32,6 +32,7 @@
                 <div class="info">
                     <div class="section-header">{{ post.title }}</div>
                     <div class="content">{{ post.content }}</div>
+                    <img v-if="post.url || post.url !== ''" :src="post.url">
                 </div>
 
                 <div class="comment-input-header">Comment:</div>
@@ -140,7 +141,8 @@
                 edited_comment: null,
                 reply_content: null,
                 form: 'none',
-                resub: null
+                resub: null,
+                image_loaded: false
             }
         },
         async created () {
@@ -425,6 +427,10 @@
         border-style: dashed;
         border-color: #242424;
         margin-bottom: 32px;
+    }
+
+    .info img {
+        max-width: 97%;
     }
 
     .section-header {
