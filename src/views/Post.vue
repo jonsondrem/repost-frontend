@@ -141,8 +141,7 @@
                 edited_comment: null,
                 reply_content: null,
                 form: 'none',
-                resub: null,
-                image_loaded: false
+                resub: null
             }
         },
         async created () {
