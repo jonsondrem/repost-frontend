@@ -438,7 +438,7 @@
 
     .info img {
         max-width: 97%;
-        padding-bottom: 32px;
+        margin-bottom: 32px;
     }
 
     .section-header {
