@@ -32,6 +32,7 @@
                 <div class="info">
                     <div class="section-header">{{ post.title }}</div>
                     <div class="content">{{ post.content }}</div>
+                    <img v-if="post.url || post.url !== ''" :src="post.url">
                 </div>
 
                 <div class="comment-input-header">Comment:</div>
@@ -425,6 +426,19 @@
         border-style: dashed;
         border-color: #242424;
         margin-bottom: 32px;
+    }
+
+    .info .section-header {
+        width: 97%;
+    }
+
+    .info .content {
+        width: 97%;
+    }
+
+    .info img {
+        max-width: 97%;
+        padding-bottom: 32px;
     }
 
     .section-header {
