@@ -37,6 +37,20 @@
                     </div>
                 </div>
                 <div class="content" v-else-if="loaded">This user hasn't made a post yet.</div>
+
+                <div class="section-header">Comments:</div>
+                <div class="content" v-if="comments.length > 0">
+                    <div v-for="comment in comments" :key="comment.id">
+                        Wrote a comment on date {{ comment.created }} in this
+                        <router-link :to="'/resubs/' + comment.parent_resub_name + '/posts/' + comment.parent_post_id">
+                            <a class="link">post</a>
+                        </router-link>. Located in resub
+                        <router-link :to="`/resubs/${comment.parent_resub_name}/posts`">
+                            <a class="link">{{ comment.parent_resub_name }}</a>
+                        </router-link>
+                    </div>
+                </div>
+                <div class="content" v-else-if="loaded">This user hasn't made a comment yet.</div>
             </div>
         </div>
 
@@ -67,6 +81,7 @@
                 user: null,
                 resubs: [],
                 posts: [],
+                comments: [],
                 loaded: false
             }
         },
@@ -84,7 +99,8 @@
 
                 await Promise.all([
                     this.$http.get(`/users/${this.user.username}/resubs/`).then(response => this.resubs = response.data),
-                    this.$http.get(`/users/${this.user.username}/posts/`).then(response => this.posts = response.data)
+                    this.$http.get(`/users/${this.user.username}/posts/`).then(response => this.posts = response.data),
+                    this.$http.get(`/users/${this.user.username}/comments/`).then(response => this.comments = response.data)
                 ])
             },
             async deleteUser () {
