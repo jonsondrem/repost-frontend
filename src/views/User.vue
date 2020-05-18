@@ -2,7 +2,7 @@
     <div class="user-info">
         <Navbar></Navbar>
         <div v-if="user" class="user">
-            <EditAndDelete v-if="state.currentUser" :delete-action="deleteUser" :edit-route="'/me/edit'"/>
+            <EditAndDelete v-if="state.currentUser.username === user.username" :delete-action="deleteUser" :edit-route="'/me/edit'"/>
             <div class="circle">
                 <div v-if="user.avatar_url">
                     <img :src="user.avatar_url" alt="Profile Picture">
