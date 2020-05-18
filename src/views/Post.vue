@@ -428,8 +428,17 @@
         margin-bottom: 32px;
     }
 
+    .info .section-header {
+        width: 97%;
+    }
+
+    .info .content {
+        width: 97%;
+    }
+
     .info img {
         max-width: 97%;
+        padding-bottom: 32px;
     }
 
     .section-header {
